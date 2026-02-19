@@ -4,6 +4,7 @@ plugins {
     java
     application
     antlr
+    id("com.diffplug.spotless") version "6.25.0"
 }
 
 repositories {
@@ -18,6 +19,17 @@ java {
 
 application {
     mainClass.set("compiler.Test")
+}
+
+spotless {
+    java {
+        target("src/**/*.java")
+        // .aosp() for 4-spaces indentation
+        googleJavaFormat("1.19.2").aosp()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
 dependencies {
@@ -71,4 +83,10 @@ tasks.register<Delete>("cleanSvmGenerated") {
 
 tasks.clean {
     dependsOn("cleanCompilerGenerated", "cleanSvmGenerated")
+    delete(file("gen"))
 }
+
+tasks.build {
+    dependsOn("spotlessApply")
+}
+
