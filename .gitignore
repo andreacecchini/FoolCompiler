@@ -1,0 +1,3 @@
+# Ignoring all generated stuff
+gen/
+build/
