@@ -1,8 +1,8 @@
 package compiler;
 
 import compiler.AST.*;
-import compiler.lib.*;
 import compiler.exc.*;
+import compiler.lib.*;
 
 public class PrintEASTVisitor extends BaseEASTVisitor<Void, VoidException> {
 
@@ -121,7 +121,7 @@ public class PrintEASTVisitor extends BaseEASTVisitor<Void, VoidException> {
     public Void visitNode(ArrowTypeNode n) {
         printNode(n);
         for (Node par : n.parlist) visit(par);
-        visit(n.ret, "->"); //marks return type
+        visit(n.ret, "->"); // marks return type
         return null;
     }
 
@@ -145,5 +145,4 @@ public class PrintEASTVisitor extends BaseEASTVisitor<Void, VoidException> {
         visit(entry.type);
         return null;
     }
-
 }

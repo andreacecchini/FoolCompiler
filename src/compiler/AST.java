@@ -1,8 +1,7 @@
 package compiler;
 
-import java.util.*;
-
 import compiler.lib.*;
+import java.util.*;
 
 public class AST {
 
@@ -250,5 +249,4 @@ public class AST {
             return visitor.visitNode(this);
         }
     }
-
 }

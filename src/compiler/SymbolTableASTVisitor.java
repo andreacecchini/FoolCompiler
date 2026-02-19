@@ -1,20 +1,18 @@
 package compiler;
 
-import java.util.*;
-
 import compiler.AST.*;
 import compiler.exc.*;
 import compiler.lib.*;
+import java.util.*;
 
 public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
 
     private final List<Map<String, STentry>> symTable = new ArrayList<>();
     private int nestingLevel = 0; // current nesting level
     int stErrors = 0;
-    int offset = -2;    // Parte da -2 perché in -1 ci sarà 0
+    int offset = -2; // Parte da -2 perché in -1 ci sarà 0
 
-    SymbolTableASTVisitor() {
-    }
+    SymbolTableASTVisitor() {}
 
     SymbolTableASTVisitor(boolean debug) {
         super(debug);
@@ -23,8 +21,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     private STentry stLookup(String id) {
         int j = nestingLevel;
         STentry entry = null;
-        while (j >= 0 && entry == null)
-            entry = symTable.get(j--).get(id);
+        while (j >= 0 && entry == null) entry = symTable.get(j--).get(id);
         return entry;
     }
 
@@ -53,12 +50,12 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         List<TypeNode> parTypes = new ArrayList<>();
         for (ParNode par : n.parlist) parTypes.add(par.type);
         STentry entry = new STentry(nestingLevel, new ArrowTypeNode(parTypes, n.retType), offset--);
-        //inserimento di ID nella symtable
+        // inserimento di ID nella symtable
         if (hm.put(n.id, entry) != null) {
             System.out.println("Fun id " + n.id + " at line " + n.getLine() + " already declared");
             stErrors++;
         }
-        //creare una nuova hashmap per la symTable
+        // creare una nuova hashmap per la symTable
         nestingLevel++;
         Map<String, STentry> hmn = new HashMap<>();
         symTable.add(hmn);
@@ -68,12 +65,13 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         int parOffset = 1;
         for (ParNode par : n.parlist)
             if (hmn.put(par.id, new STentry(nestingLevel, par.type, parOffset++)) != null) {
-                System.out.println("Par id " + par.id + " at line " + n.getLine() + " already declared");
+                System.out.println(
+                        "Par id " + par.id + " at line " + n.getLine() + " already declared");
                 stErrors++;
             }
         for (Node dec : n.declist) visit(dec);
         visit(n.exp);
-        //rimuovere la hashmap corrente poiche' esco dallo scope
+        // rimuovere la hashmap corrente poiche' esco dallo scope
         symTable.remove(nestingLevel--);
         offset = prevOffset;
         return null;
@@ -85,7 +83,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         visit(n.exp);
         Map<String, STentry> hm = symTable.get(nestingLevel);
         STentry entry = new STentry(nestingLevel, n.type, offset--);
-        //inserimento di ID nella symtable
+        // inserimento di ID nella symtable
         if (hm.put(n.id, entry) != null) {
             System.out.println("Var id " + n.id + " at line " + n.getLine() + " already declared");
             stErrors++;
@@ -153,7 +151,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         if (print) printNode(n);
         STentry entry = stLookup(n.id);
         if (entry == null) {
-            System.out.println("Var or Par id " + n.id + " at line " + n.getLine() + " not declared");
+            System.out.println(
+                    "Var or Par id " + n.id + " at line " + n.getLine() + " not declared");
             stErrors++;
         } else {
             n.entry = entry;
@@ -175,12 +174,12 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     }
 }
 
-//	private int decOffset=-1; // counter for offset of local declarations at current nesting level 
+//	private int decOffset=-1; // counter for offset of local declarations at current nesting level
 
+//	int prevNLDecOffset=decOffset; // stores counter for offset of declarations at previous nesting
+// level
 
-//	int prevNLDecOffset=decOffset; // stores counter for offset of declarations at previous nesting level 
-
-//	decOffset=prevNLDecOffset; // restores counter for offset of declarations at previous nesting level 
-
+//	decOffset=prevNLDecOffset; // restores counter for offset of declarations at previous nesting
+// level
 
 //	n.nl = nestingLevel; //

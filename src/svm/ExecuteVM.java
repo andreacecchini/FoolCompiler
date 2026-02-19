@@ -123,5 +123,4 @@ public class ExecuteVM {
     private void push(int v) {
         memory[--sp] = v;
     }
-
 }

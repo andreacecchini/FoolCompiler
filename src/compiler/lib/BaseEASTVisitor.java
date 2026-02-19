@@ -5,8 +5,7 @@ import compiler.exc.UnimplException;
 
 public class BaseEASTVisitor<S, E extends Exception> extends BaseASTVisitor<S, E> {
 
-    protected BaseEASTVisitor() {
-    }
+    protected BaseEASTVisitor() {}
 
     protected BaseEASTVisitor(boolean ie) {
         super(ie);

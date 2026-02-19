@@ -1,18 +1,17 @@
 package compiler.lib;
 
+import static compiler.lib.FOOLlib.*;
+
 import compiler.AST.*;
 import compiler.exc.*;
-
-import static compiler.lib.FOOLlib.*;
 
 public class BaseASTVisitor<S, E extends Exception> {
 
     private boolean incomplExc; // enables throwing IncomplException
-    protected boolean print;    // enables printing
+    protected boolean print; // enables printing
     protected String indent;
 
-    protected BaseASTVisitor() {
-    }
+    protected BaseASTVisitor() {}
 
     protected BaseASTVisitor(boolean ie) {
         incomplExc = ie;
@@ -32,26 +31,25 @@ public class BaseASTVisitor<S, E extends Exception> {
     }
 
     public S visit(Visitable v) throws E {
-        return visit(v, "");                //performs unmarked visit
+        return visit(v, ""); // performs unmarked visit
     }
 
-    public S visit(Visitable v, String mark) throws E {   //when printing marks this visit with string mark
+    public S visit(Visitable v, String mark)
+            throws E { // when printing marks this visit with string mark
         if (v == null)
             if (incomplExc) throw new IncomplException();
-            else
-                return null;
+            else return null;
         if (print) {
             String temp = indent;
             indent = (indent == null) ? "" : indent + "  ";
-            indent += mark; //inserts mark
+            indent += mark; // inserts mark
             try {
                 S result = visitByAcc(v);
                 return result;
             } finally {
                 indent = temp;
             }
-        } else
-            return visitByAcc(v);
+        } else return visitByAcc(v);
     }
 
     S visitByAcc(Visitable v) throws E {
