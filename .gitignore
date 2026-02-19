@@ -1,3 +1,4 @@
-# Ignoring all generated stuff
+# Ignoring gradle's generated stuff...
 gen/
 build/
+.gradle/
