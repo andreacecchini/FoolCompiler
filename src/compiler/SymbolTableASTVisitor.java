@@ -9,7 +9,7 @@ import java.util.*;
 public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
 
     private final List<Map<String, STentry>> symTable = new ArrayList<>();
-    private int nestingLevel = 0;
+    private int nestingLevel = -1;
     private int offset = -2;
     int stErrors = 0;
 
@@ -23,10 +23,10 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     @Override
     public Void visitNode(ProgLetInNode n) {
         debug(n);
-        symTable.add(new HashMap<>());
+        openScope();
         visitAll(n.declist);
         visit(n.exp);
-        symTable.removeFirst();
+        closeScope(offset);
         return null;
     }
 
