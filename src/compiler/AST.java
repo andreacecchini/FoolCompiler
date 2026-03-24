@@ -161,11 +161,14 @@ public class AST {
         }
     }
 
-    public static class CallNode extends Node {
+    public abstract static class STNode extends Node {
         String id;
-        List<Node> arglist = new ArrayList<Node>();
         STentry entry;
         int nl;
+    }
+
+    public static class CallNode extends STNode {
+        List<Node> arglist = new ArrayList<Node>();
 
         CallNode(String i, List<Node> p) {
             id = i;
@@ -178,10 +181,7 @@ public class AST {
         }
     }
 
-    public static class IdNode extends Node {
-        String id;
-        STentry entry;
-        int nl;
+    public static class IdNode extends STNode {
 
         IdNode(String i) {
             id = i;
