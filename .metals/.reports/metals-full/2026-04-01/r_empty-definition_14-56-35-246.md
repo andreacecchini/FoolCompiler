@@ -1,3 +1,14 @@
+error id: file://<WORKSPACE>/src/compiler/Test.java:java/lang/Boolean#
+file://<WORKSPACE>/src/compiler/Test.java
+empty definition using pc, found symbol in pc: java/lang/Boolean#
+empty definition using semanticdb
+empty definition using fallback
+non-local guesses:
+
+offset: 346
+uri: file://<WORKSPACE>/src/compiler/Test.java
+text:
+```scala
 package compiler;
 
 import compiler.exc.*;
@@ -11,9 +22,10 @@ import org.antlr.v4.runtime.tree.*;
 
 public class Test {
     public static void main(String[] args) throws Exception {
-        boolean debugMode = Boolean.getBoolean("fool.debug");
-        String sourceBaseName = sourceName(args);
+        boolean debugMode = Boolean@@.getBoolean("fool.debug");
+        String sourceBaseName = sourceName(args, debugMode);
         String sourceFileName = "src/" + sourceBaseName + ".fool";
+        ensureSourceFileExists(sourceFileName, debugMode);
         // ================ BACK-END ================
         // 1) Lexing e parsing
         ParsingResult parsingStepResult = lexingAndParsing(sourceFileName);
@@ -23,10 +35,11 @@ public class Test {
         int symbolTableErrors = enrichingAst(ast);
         // 4) Type checking
         int typeErrors = typeChecking(ast);
-        int frontEndErrors = parsingStepResult.lexicalErrors
-                + parsingStepResult.syntaxErrors
-                + symbolTableErrors
-                + typeErrors;
+        int frontEndErrors =
+                parsingStepResult.lexicalErrors
+                        + parsingStepResult.syntaxErrors
+                        + symbolTableErrors
+                        + typeErrors;
         System.out.println("You had a total of " + frontEndErrors + " front-end errors.\n");
         exitIfErrors(frontEndErrors);
         // ================ BACK-END ================
@@ -68,7 +81,8 @@ public class Test {
 
     private static Node astGeneration(ParseTree parseTree) {
         System.out.println("Generating AST.");
-        ASTGenerationSTVisitor visitor = new ASTGenerationSTVisitor(); // use true to visualize the ST
+        ASTGenerationSTVisitor visitor =
+                new ASTGenerationSTVisitor(); // use true to visualize the ST
         Node ast = visitor.visit(parseTree);
         System.out.println();
         return ast;
@@ -148,8 +162,9 @@ public class Test {
         if (debugMode) {
             List<String> asmLines = Files.readAllLines(Path.of(asmFileName));
             System.out.println("Running generated code via Debug Stack Virtual Machine.");
-            visualsvm.ExecuteVM vm = new visualsvm.ExecuteVM(
-                    assemblyStepResult.machineCode, assemblyStepResult.sourceMap, asmLines);
+            visualsvm.ExecuteVM vm =
+                    new visualsvm.ExecuteVM(
+                            assemblyStepResult.machineCode, assemblyStepResult.sourceMap, asmLines);
             vm.cpu();
             return;
         }
@@ -165,24 +180,43 @@ public class Test {
         }
     }
 
-    private static String sourceName(String[] args) {
+    private static String sourceName(String[] args, boolean debugMode) {
         if (args.length < 1 || args[0] == null || args[0].isBlank()) {
-            System.out.println("Missing required source file name.");
-            System.exit(1);
+            printUsageAndExit(debugMode, "Missing required source file name.");
         }
-        String sourceBaseName = args[0].trim();
-        String sourceFileName = "src/" + sourceBaseName + ".fool";
-        if (Files.notExists(Path.of(sourceFileName))) {
-            System.out.println("Source file not found " + sourceFileName + ". Expected path: src/<nomeFile>.fool");
-            System.exit(1);
-        }
-        return sourceBaseName;
+
+        return args[0].trim();
     }
 
-    private record ParsingResult(ParseTree parseTree, int lexicalErrors, int syntaxErrors) {
+    private static void ensureSourceFileExists(String sourceFileName, boolean debugMode) {
+        if (Files.notExists(Path.of(sourceFileName))) {
+            printUsageAndExit(
+                    debugMode,
+                    "Source file not found: "
+                            + sourceFileName
+                            + ". Expected path: src/<nomeFile>.fool");
+        }
     }
+
+    private static void printUsageAndExit(boolean debugMode, String message) {
+        String usage =
+                debugMode
+                        ? "Usage: ./gradlew debug --args=\"nomeFile\""
+                        : "Usage: ./gradlew run --args=\"nomeFile\"";
+        System.err.println(message);
+        System.err.println(usage);
+        System.exit(1);
+    }
+
+    private record ParsingResult(ParseTree parseTree, int lexicalErrors, int syntaxErrors) {}
 
     private record AssembleResult(
-            int[] machineCode, int[] sourceMap, int lexicalErrors, int syntaxErrors) {
-    }
+            int[] machineCode, int[] sourceMap, int lexicalErrors, int syntaxErrors) {}
 }
+
+```
+
+
+#### Short summary: 
+
+empty definition using pc, found symbol in pc: java/lang/Boolean#

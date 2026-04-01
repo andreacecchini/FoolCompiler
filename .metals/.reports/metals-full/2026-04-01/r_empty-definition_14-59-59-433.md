@@ -1,3 +1,14 @@
+error id: file://<WORKSPACE>/src/compiler/Test.java:java/lang/String#
+file://<WORKSPACE>/src/compiler/Test.java
+empty definition using pc, found symbol in pc: 
+empty definition using semanticdb
+empty definition using fallback
+non-local guesses:
+
+offset: 7331
+uri: file://<WORKSPACE>/src/compiler/Test.java
+text:
+```scala
 package compiler;
 
 import compiler.exc.*;
@@ -170,12 +181,13 @@ public class Test {
             System.out.println("Missing required source file name.");
             System.exit(1);
         }
-        String sourceBaseName = args[0].trim();
+        String@@ sourceBaseName = args[0].trim();
         String sourceFileName = "src/" + sourceBaseName + ".fool";
         if (Files.notExists(Path.of(sourceFileName))) {
             System.out.println("Source file not found " + sourceFileName + ". Expected path: src/<nomeFile>.fool");
             System.exit(1);
         }
+
         return sourceBaseName;
     }
 
@@ -186,3 +198,10 @@ public class Test {
             int[] machineCode, int[] sourceMap, int lexicalErrors, int syntaxErrors) {
     }
 }
+
+```
+
+
+#### Short summary: 
+
+empty definition using pc, found symbol in pc: 

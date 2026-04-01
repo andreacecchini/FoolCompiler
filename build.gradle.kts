@@ -105,10 +105,10 @@ tasks.clean {
 
 tasks.register<JavaExec>("debug") {
     group = "application"
-    description = "Run compiler and virtual machine in debug mode (visualsvm)."
+    description = "Run compiler and virtual machine in debug mode (visualsvm). Use --args=\"nomeFile\"."
     classpath = sourceSets.main.get().runtimeClasspath
     mainClass.set("compiler.Test")
-    args("debug")
+    systemProperty("fool.debug", "true")
 }
 
 tasks.build {
