@@ -5,7 +5,7 @@
 To compile and execute `src/<fileName>.fool`:
 
 ```bash
-./gradlew run --args="nomeFile"
+./gradlew run --args="fileName"
 ```
 
 To compile and execute on **visualsvm** `src/<fileName>.fool`:
