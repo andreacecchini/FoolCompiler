@@ -150,6 +150,14 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode, TypeExceptio
     }
 
     @Override
+    public TypeNode visitNode(NotNode n) throws TypeException {
+        if (print) printNode(n, n.bool.toString());
+        if (!(isSubtype(visit(n.bool), new BoolTypeNode())))
+            throw new TypeException("Non boolean argument in not", n.getLine());
+        return new BoolTypeNode();
+    } 
+
+    @Override
     public TypeNode visitNode(IntNode n) {
         if (print) printNode(n, n.val.toString());
         return new IntTypeNode();

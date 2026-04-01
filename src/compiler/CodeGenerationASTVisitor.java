@@ -155,6 +155,22 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
     }
 
     @Override
+    public String visitNode(NotNode n) {
+        if (print) printNode(n, n.bool.toString());
+        String lTrue = freshLabel();
+        String lEnd = freshLabel();
+        return nlJoin(
+                visit(n.bool), // code generation for bool type
+                "push 0", // push false
+                "beq " + lTrue, // check if `bool` was false, if true jump to `lTrue` 
+                "push 0", // `bool` was true, so push false 
+                "b " + lEnd, // jump to `lEnd`
+                lTrue + ":", 
+                "push 1", // `bool` was false, so push true
+                lEnd + ":");
+    }
+
+    @Override
     public String visitNode(IntNode n) {
         if (print) printNode(n, n.val.toString());
         return nlJoin("push " + n.val);
