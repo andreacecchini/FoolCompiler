@@ -831,3 +831,14 @@ AVVERTENZA: Unmatched cancel notification for request id 300
 2026.04.01 15:00:08 INFO  no build target found for /Users/andreacecchini/git/FoolCompiler/src/compiler/Test.java. Using fallback presentation compiler.
 2026.04.01 15:01:10 INFO  no build target found for /Users/andreacecchini/git/FoolCompiler/src/compiler/Test.java. Using fallback presentation compiler.
 2026.04.01 15:01:11 INFO  no build target found for /Users/andreacecchini/git/FoolCompiler/src/compiler/Test.java. Using fallback presentation compiler.
+2026.04.01 15:02:46 INFO  no build target found for /Users/andreacecchini/git/FoolCompiler/src/compiler/Test.java. Using fallback presentation compiler.
+2026.04.01 15:02:46 INFO  no build target found for /Users/andreacecchini/git/FoolCompiler/src/compiler/Test.java. Using fallback presentation compiler.
+2026.04.01 15:02:46 INFO  no build target found for /Users/andreacecchini/git/FoolCompiler/src/compiler/Test.java. Using fallback presentation compiler.
+apr 01, 2026 3:02:46 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+AVVERTENZA: Unmatched cancel notification for request id 1269
+apr 01, 2026 3:02:46 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+AVVERTENZA: Unmatched cancel notification for request id 1270
+2026.04.01 15:02:46 INFO  no build target found for /Users/andreacecchini/git/FoolCompiler/src/compiler/Test.java. Using fallback presentation compiler.
+2026.04.01 15:02:46 INFO  no build target found for /Users/andreacecchini/git/FoolCompiler/src/compiler/Test.java. Using fallback presentation compiler.
+apr 01, 2026 3:02:46 PM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+AVVERTENZA: Unmatched cancel notification for request id 1273
