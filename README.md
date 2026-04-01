@@ -26,7 +26,7 @@ Input requirement:
 - File must exists in `src/<nomeFile>.fool`.
 - Error on bads `fileName`.
 
-## Task Gradle principali
+## Usefull gradle tasks
 
 - `./gradlew build`
   - automatic format by `spotlessApply` before build.
@@ -37,9 +37,7 @@ Input requirement:
   - clean `build/`.
   - clean `gen/`.
 
-## Task di supporto utili
-
-Grammar (lexer/parser) generation in `gen/` under right package.
+Grammars (lexer/parser) can be generated selectively in `gen/`.
 
 - `./gradlew generateCompilerGrammar`
 - `./gradlew generateSvmGrammar`
