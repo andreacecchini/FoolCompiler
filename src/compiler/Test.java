@@ -2,10 +2,12 @@ package compiler;
 
 import compiler.exc.*;
 import compiler.lib.*;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
@@ -167,8 +169,10 @@ public class Test {
         }
     }
 
-    private record ParsingResult(ParseTree parseTree, int lexicalErrors, int syntaxErrors) {}
+    private record ParsingResult(ParseTree parseTree, int lexicalErrors, int syntaxErrors) {
+    }
 
     private record AssembleResult(
-            int[] machineCode, int[] sourceMap, int lexicalErrors, int syntaxErrors) {}
+            int[] machineCode, int[] sourceMap, int lexicalErrors, int syntaxErrors) {
+    }
 }
