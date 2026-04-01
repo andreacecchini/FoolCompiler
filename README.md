@@ -22,7 +22,7 @@ Examples:
 ```
 
 Input requirement:
-- `fileName` is mandatory.s
+- `fileName` is mandatory.
 - File must exists in `src/<nomeFile>.fool`.
 - Error on bads `fileName`.
 
