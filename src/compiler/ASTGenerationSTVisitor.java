@@ -8,6 +8,7 @@ import compiler.lib.*;
 import java.util.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
 
@@ -71,8 +72,18 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
     @Override
     public Node visitPlusMinus(PlusMinusContext c) {
         if (print) printVarAndProdName(c);
-        Node n = new PlusNode(visit(c.exp(0)), visit(c.exp(1)));
-        n.setLine(c.PLUS().getSymbol().getLine());
+        Node left = visit(c.exp(0));
+        Node right = visit(c.exp(1));
+        TerminalNode operator;
+        Node n;
+        if (c.PLUS() != null) {
+            operator = c.PLUS();
+            n = new PlusNode(left, right);
+        } else {
+            operator = c.MINUS();
+            n = new MinusNode(left, right);
+        }
+        n.setLine(operator.getSymbol().getLine());
         return n;
     }
 
