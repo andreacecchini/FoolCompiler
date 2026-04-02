@@ -171,6 +171,20 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
     }
 
     @Override
+    public String visitNode(OrNode n) throws VoidException {
+        if (print) printNode(n);
+        String lTrue = freshLabel();
+        return nlJoin(
+                visit(n.left),  // visit left and put its content on the stack
+                "push 0",
+                "beq " + lTrue,
+                "push 1",                 // if left was true, then push 1
+                lTrue + ":",
+                visit(n.right)            // if left was false, then push right
+        );
+    }
+
+    @Override
     public String visitNode(IntNode n) {
         if (print) printNode(n, n.val.toString());
         return nlJoin("push " + n.val);
