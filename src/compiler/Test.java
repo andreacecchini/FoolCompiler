@@ -23,10 +23,11 @@ public class Test {
         int symbolTableErrors = enrichingAst(ast);
         // 4) Type checking
         int typeErrors = typeChecking(ast);
-        int frontEndErrors = parsingStepResult.lexicalErrors
-                + parsingStepResult.syntaxErrors
-                + symbolTableErrors
-                + typeErrors;
+        int frontEndErrors =
+                parsingStepResult.lexicalErrors
+                        + parsingStepResult.syntaxErrors
+                        + symbolTableErrors
+                        + typeErrors;
         System.out.println("You had a total of " + frontEndErrors + " front-end errors.\n");
         exitIfErrors(frontEndErrors);
         // ================ BACK-END ================
@@ -68,7 +69,8 @@ public class Test {
 
     private static Node astGeneration(ParseTree parseTree) {
         System.out.println("Generating AST.");
-        ASTGenerationSTVisitor visitor = new ASTGenerationSTVisitor(); // use true to visualize the ST
+        ASTGenerationSTVisitor visitor =
+                new ASTGenerationSTVisitor(); // use true to visualize the ST
         Node ast = visitor.visit(parseTree);
         System.out.println();
         return ast;
@@ -148,8 +150,9 @@ public class Test {
         if (debugMode) {
             List<String> asmLines = Files.readAllLines(Path.of(asmFileName));
             System.out.println("Running generated code via Debug Stack Virtual Machine.");
-            visualsvm.ExecuteVM vm = new visualsvm.ExecuteVM(
-                    assemblyStepResult.machineCode, assemblyStepResult.sourceMap, asmLines);
+            visualsvm.ExecuteVM vm =
+                    new visualsvm.ExecuteVM(
+                            assemblyStepResult.machineCode, assemblyStepResult.sourceMap, asmLines);
             vm.cpu();
             return;
         }
@@ -173,16 +176,17 @@ public class Test {
         String sourceBaseName = args[0].trim();
         String sourceFileName = "src/" + sourceBaseName + ".fool";
         if (Files.notExists(Path.of(sourceFileName))) {
-            System.out.println("Source file not found " + sourceFileName + ". Expected path: src/<nomeFile>.fool");
+            System.out.println(
+                    "Source file not found "
+                            + sourceFileName
+                            + ". Expected path: src/<nomeFile>.fool");
             System.exit(1);
         }
         return sourceBaseName;
     }
 
-    private record ParsingResult(ParseTree parseTree, int lexicalErrors, int syntaxErrors) {
-    }
+    private record ParsingResult(ParseTree parseTree, int lexicalErrors, int syntaxErrors) {}
 
     private record AssembleResult(
-            int[] machineCode, int[] sourceMap, int lexicalErrors, int syntaxErrors) {
-    }
+            int[] machineCode, int[] sourceMap, int lexicalErrors, int syntaxErrors) {}
 }

@@ -139,6 +139,12 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
     }
 
     @Override
+    public Node visitAndOr(AndOrContext c) {
+        if (print) printVarAndProdName(c);
+        return new OrNode(visit(c.exp(0)), visit(c.exp(1)));
+    }
+
+    @Override
     public Node visitInteger(IntegerContext c) {
         if (print) printVarAndProdName(c);
         int v = Integer.parseInt(c.NUM().getText());

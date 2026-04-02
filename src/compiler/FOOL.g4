@@ -35,7 +35,7 @@ dec : VAR ID COLON type ASS exp SEMIC #vardec
 exp     : exp (TIMES /*| DIV*/) exp #timesDiv
         | exp (PLUS /*| MINUS */) exp #plusMinus
         | exp (EQ /*| GE | LE*/) exp #comp
-     // | exp (AND | OR) exp #andOr
+        | exp (/*AND |*/ OR) exp #andOr
 	    | NOT exp #not
         | LPAR exp RPAR #pars
     	| MINUS? NUM #integer
@@ -72,7 +72,7 @@ SEMIC 	: ';' ;
 COLON   : ':' ; 
 COMMA	: ',' ;
 DOT	    : '.' ;
-// OR	    : '||';
+OR	    : '||';
 // AND	    : '&&';
 NOT	    : '!' ;
 // GE	    : '>=' ;

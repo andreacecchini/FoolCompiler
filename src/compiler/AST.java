@@ -219,6 +219,21 @@ public class AST {
         }
     }
 
+    public static class OrNode extends Node {
+        Node left;
+        Node right;
+
+        OrNode(Node l, Node r) {
+            left = l;
+            right= r;
+        }
+
+        @Override
+        public <S, E extends Exception> S accept(BaseASTVisitor<S, E> visitor) throws E {
+            return visitor.visitNode(this);
+        }
+    }
+
     public static class IntNode extends Node {
         Integer val;
 
