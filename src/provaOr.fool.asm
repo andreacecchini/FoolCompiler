@@ -8,11 +8,13 @@ lw
 push 0
 beq label0
 push 1
+b label1
 label0:
 lfp
 push -3
 add
 lw
+label1:
 lfp
 push -4
 add
