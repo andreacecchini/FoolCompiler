@@ -160,13 +160,13 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
         String lTrue = freshLabel();
         String lEnd = freshLabel();
         return nlJoin(
-                visit(n.bool), // code generation for bool type
-                "push 0", // push false
-                "beq " + lTrue, // check if `bool` was false, if true jump to `lTrue` 
-                "push 0", // `bool` was true, so push false 
-                "b " + lEnd, // jump to `lEnd`
-                lTrue + ":", 
-                "push 1", // `bool` was false, so push true
+                visit(n.bool),  //; code generation for bool type
+                "push 0",       //; push false
+                "beq " + lTrue, //; check if `bool` was false, if true jump to `lTrue`
+                "push 0",       //; `bool` was true, so push false
+                "b " + lEnd,    //; jump to `lEnd`
+                lTrue + ":",
+                "push 1",       //; `bool` was false, so push true
                 lEnd + ":");
     }
 
