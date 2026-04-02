@@ -1,0 +1,6 @@
+let
+    var x1: int = 2;
+    var x2: int = 1;
+    var ge: bool = x1 >= x2;
+in
+    print(ge);
