@@ -61,7 +61,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
     }
 
     @Override
-    public Node visitTimes(TimesContext c) {
+    public Node visitTimesDiv(TimesDivContext c) {
         if (print) printVarAndProdName(c);
         Node n = new TimesNode(visit(c.exp(0)), visit(c.exp(1)));
         n.setLine(c.TIMES().getSymbol().getLine()); // setLine added
@@ -69,7 +69,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
     }
 
     @Override
-    public Node visitPlus(PlusContext c) {
+    public Node visitPlusMinus(PlusMinusContext c) {
         if (print) printVarAndProdName(c);
         Node n = new PlusNode(visit(c.exp(0)), visit(c.exp(1)));
         n.setLine(c.PLUS().getSymbol().getLine());
@@ -77,7 +77,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
     }
 
     @Override
-    public Node visitEq(EqContext c) {
+    public Node visitComp(CompContext c) {
         if (print) printVarAndProdName(c);
         Node n = new EqualNode(visit(c.exp(0)), visit(c.exp(1)));
         n.setLine(c.EQ().getSymbol().getLine());
@@ -130,6 +130,12 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
     public Node visitBoolType(BoolTypeContext c) {
         if (print) printVarAndProdName(c);
         return new BoolTypeNode();
+    }
+
+    @Override
+    public Node visitNot(NotContext c) {
+        if (print) printVarAndProdName(c);
+        return new NotNode(visit(c.exp()));
     }
 
     @Override

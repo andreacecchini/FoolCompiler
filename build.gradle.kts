@@ -1,5 +1,22 @@
 import org.gradle.api.plugins.antlr.AntlrTask
 
+data class GrammarConfig(
+    val name: String
+) {
+    val sourceDir: String
+        get() = name
+    val generatedDir: String
+        get() = name
+    val pkg: String
+        get() = name
+    private val capitalizedName: String
+        get() = name.replaceFirstChar { c -> c.uppercaseChar() }
+    val generateTaskName: String
+        get() = "generate${capitalizedName}Grammar"
+    val cleanTaskName: String
+        get() = "clean${capitalizedName}Generated"
+}
+
 plugins {
     java
     application
@@ -49,41 +66,49 @@ tasks.named<AntlrTask>("generateGrammarSource") {
     enabled = false
 }
 
-tasks.register<AntlrTask>("generateCompilerGrammar") {
-    source = fileTree("src/compiler") {
-        include("**/*.g4")
-    }
-    dependsOn("cleanCompilerGenerated")
-    outputDirectory = file("gen/compiler")
-    arguments = listOf("-visitor", "-listener", "-package", "compiler", "-Xexact-output-dir")
-    maxHeapSize = "64m"
-}
+val grammarConfigs = listOf(
+    GrammarConfig("compiler"),
+    GrammarConfig("svm"),
+    GrammarConfig("visualsvm")
+)
 
-tasks.register<AntlrTask>("generateSvmGrammar") {
-    source = fileTree("src/svm") {
-        include("**/*.g4")
+val generateTaskNames = mutableListOf<String>()
+val cleanTaskNames = mutableListOf<String>()
+
+for (grammar in grammarConfigs) {
+    generateTaskNames.add(grammar.generateTaskName)
+    cleanTaskNames.add(grammar.cleanTaskName)
+
+    tasks.register<Delete>(grammar.cleanTaskName) {
+        delete(file("gen/${grammar.generatedDir}"))
     }
-    dependsOn("cleanSvmGenerated")
-    outputDirectory = file("gen/svm")
-    arguments = listOf("-visitor", "-listener", "-package", "svm", "-Xexact-output-dir")
-    maxHeapSize = "64m"
+
+    tasks.register<AntlrTask>(grammar.generateTaskName) {
+        source = fileTree("src/${grammar.sourceDir}") {
+            include("**/*.g4")
+        }
+        dependsOn(grammar.cleanTaskName)
+        outputDirectory = file("gen/${grammar.generatedDir}")
+        arguments = listOf("-visitor", "-listener", "-package", grammar.pkg, "-Xexact-output-dir")
+        maxHeapSize = "64m"
+    }
 }
 
 tasks.compileJava {
-    dependsOn("generateCompilerGrammar", "generateSvmGrammar")
-}
-
-tasks.register<Delete>("cleanCompilerGenerated") {
-    delete(file("gen/compiler"))
-}
-
-tasks.register<Delete>("cleanSvmGenerated") {
-    delete(file("gen/svm"))
+    dependsOn(*generateTaskNames.toTypedArray())
 }
 
 tasks.clean {
-    dependsOn("cleanCompilerGenerated", "cleanSvmGenerated")
+    dependsOn(*cleanTaskNames.toTypedArray())
     delete(file("gen"))
+}
+
+tasks.register<JavaExec>("debug") {
+    group = "application"
+    description = "Run compiler and virtual machine in debug mode (visualsvm). Use --args=\"nomeFile\"."
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass.set("compiler.Test")
+    systemProperty("fool.debug", "true")
 }
 
 tasks.build {

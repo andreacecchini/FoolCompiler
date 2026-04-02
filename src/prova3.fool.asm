@@ -16,8 +16,7 @@ halt
 
 function0:
 cfp
-lfp
-stm
+lra
 lfp
 push 1
 add
@@ -29,6 +28,7 @@ lw
 add
 stm
 
+sra
 pop
 pop
 pop
