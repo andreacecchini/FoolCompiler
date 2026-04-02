@@ -1,3 +1,6 @@
 package compiler.lib;
 
-public abstract class TypeNode extends Node {}
+
+public abstract class TypeNode extends Node {
+
+}
