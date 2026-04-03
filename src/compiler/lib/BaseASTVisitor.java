@@ -11,8 +11,7 @@ public class BaseASTVisitor<S, E extends Exception> {
     protected boolean print; // enables printing
     protected String indent;
 
-    protected BaseASTVisitor() {
-    }
+    protected BaseASTVisitor() {}
 
     protected BaseASTVisitor(boolean ie) {
         incomplExc = ie;
@@ -131,7 +130,9 @@ public class BaseASTVisitor<S, E extends Exception> {
         throw new UnimplException();
     }
 
-    // public S visitNode(LessEqualNode n) throws E {throw new UnimplException();}
+    public S visitNode(LessEqualNode n) throws E {
+        throw new UnimplException();
+    }
 
     public S visitNode(NotNode n) throws E {
         throw new UnimplException();
@@ -146,7 +147,7 @@ public class BaseASTVisitor<S, E extends Exception> {
     }
 
     // public S visitNode(DivNode n) throws E {throw new UnimplException();}
-    
+
     // public S visitNode(AndNode n) throws E {throw new UnimplException();}
 
     // OBJECT-ORIENTED EXTENSIONS
