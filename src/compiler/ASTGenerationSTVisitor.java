@@ -64,8 +64,18 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
     @Override
     public Node visitTimesDiv(TimesDivContext c) {
         if (print) printVarAndProdName(c);
-        Node n = new TimesNode(visit(c.exp(0)), visit(c.exp(1)));
-        n.setLine(c.TIMES().getSymbol().getLine()); // setLine added
+        Node left = visit(c.exp(0));
+        Node right = visit(c.exp(1));
+        TerminalNode operator;
+        Node n;
+        if (c.TIMES() != null) {
+            operator = c.TIMES();
+            n = new TimesNode(left, right);
+        } else {
+            operator = c.DIV();
+            n = new DivNode(left, right);
+        }
+        n.setLine(operator.getSymbol().getLine());
         return n;
     }
 
