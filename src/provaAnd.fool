@@ -1,0 +1,6 @@
+let
+    var b1: bool = true;
+    var b2: bool = true;
+    var and: bool = b1 && b2;
+in
+    print(and);

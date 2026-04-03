@@ -168,10 +168,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
         if (print) printVarAndProdName(c);
         Node left = visit(c.exp(0));
         Node right = visit(c.exp(1));
-        if (c.OR() != null) {
-            return new OrNode(left, right);
-        }
-        return null; // new AndNode...
+        return c.OR() != null ? new OrNode(left, right) : new AndNode(left, right);
     }
 
     @Override

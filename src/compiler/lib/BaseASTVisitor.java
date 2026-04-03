@@ -146,9 +146,11 @@ public class BaseASTVisitor<S, E extends Exception> {
         throw new UnimplException();
     }
 
-    // public S visitNode(DivNode n) throws E {throw new UnimplException();}
+    public S visitNode(AndNode n) throws E {
+        throw new UnimplException();
+    }
 
-    // public S visitNode(AndNode n) throws E {throw new UnimplException();}
+    // public S visitNode(DivNode n) throws E {throw new UnimplException();}
 
     // OBJECT-ORIENTED EXTENSIONS
 

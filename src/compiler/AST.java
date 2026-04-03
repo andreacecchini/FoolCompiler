@@ -279,6 +279,21 @@ public class AST {
         }
     }
 
+    public static class AndNode extends Node {
+        final Node left;
+        final Node right;
+
+        AndNode(Node l, Node r) {
+            left = l;
+            right = r;
+        }
+
+        @Override
+        public <S, E extends Exception> S accept(BaseASTVisitor<S, E> visitor) throws E {
+            return visitor.visitNode(this);
+        }
+    }
+
     public static class IntNode extends Node {
         final Integer val;
 

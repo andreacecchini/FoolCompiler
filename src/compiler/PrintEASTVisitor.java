@@ -151,6 +151,14 @@ public class PrintEASTVisitor extends BaseEASTVisitor<Void, VoidException> {
     }
 
     @Override
+    public Void visitNode(AndNode n) throws VoidException {
+        printNode(n);
+        visit(n.left);
+        visit(n.right);
+        return null;
+    }
+
+    @Override
     public Void visitNode(IntNode n) {
         printNode(n, n.val.toString());
         return null;
