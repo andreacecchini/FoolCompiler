@@ -1,8 +1,6 @@
 import org.gradle.api.plugins.antlr.AntlrTask
 
-data class GrammarConfig(
-    val name: String
-) {
+data class GrammarConfig(val name: String) {
     val sourceDir: String
         get() = name
     val generatedDir: String
@@ -21,7 +19,7 @@ plugins {
     java
     application
     antlr
-    id("com.diffplug.spotless") version "6.25.0"
+    alias(libs.plugins.spotless)
 }
 
 repositories {
@@ -30,7 +28,7 @@ repositories {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(24))
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
     }
 }
 
@@ -41,8 +39,7 @@ application {
 spotless {
     java {
         target("src/**/*.java")
-        // .aosp() for 4-spaces indentation
-        googleJavaFormat("1.19.2").aosp()
+        googleJavaFormat(libs.versions.googleJavaFormat.get()).aosp()
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()
@@ -50,8 +47,8 @@ spotless {
 }
 
 dependencies {
-    antlr("org.antlr:antlr4:4.13.2")
-    implementation("org.antlr:antlr4-runtime:4.13.2")
+    antlr(libs.antlr.tool)
+    implementation(libs.antlr.runtime)
 }
 
 sourceSets {
@@ -114,4 +111,3 @@ tasks.register<JavaExec>("debug") {
 tasks.build {
     dependsOn("spotlessApply")
 }
-
