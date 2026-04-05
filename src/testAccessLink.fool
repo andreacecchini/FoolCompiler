@@ -1,0 +1,9 @@
+let
+    var x: int = 10;
+    var k: int = 3;
+    fun f:int (x: int)
+        let
+            fun g:int (y: int) x + y;
+            fun h:int (k: int) g(k);
+        in h(k);
+in print(f(x));
