@@ -1,0 +1,12 @@
+[versions]
+java = "24"
+antlr = "4.13.2"
+spotless = "6.25.0"
+googleJavaFormat = "1.19.2"
+
+[libraries]
+antlr-tool = { module = "org.antlr:antlr4", version.ref = "antlr" }
+antlr-runtime = { module = "org.antlr:antlr4-runtime", version.ref = "antlr" }
+
+[plugins]
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
