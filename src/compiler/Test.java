@@ -190,4 +190,3 @@ public class Test {
     private record AssembleResult(
             int[] machineCode, int[] sourceMap, int lexicalErrors, int syntaxErrors) {}
 }
-
