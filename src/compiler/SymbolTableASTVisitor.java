@@ -11,12 +11,15 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
 
     private static final int GLOBAL_LEVEL = 0;
     private static final int CLASS_LEVEL = GLOBAL_LEVEL + 1;
+    public static final int METHOD_OFFSET_START = 0;
+    public static final int FIELD_OFFSET_START = -1;
+    public static final int DECLARATION_OFFSET_START = -2;
     private final List<Map<String, STentry>> symTable = new ArrayList<>();
     private final Map<String, Map<String, STentry>> classTable = new HashMap<>();
     private int nestingLevel = 0; // current nesting level
-    private int decOffset = -2; // counter for offset of local declarations at current nesting level
-    private int fieldOffset = -1;
-    private int methodOffset = 0;
+    private int decOffset = DECLARATION_OFFSET_START; // counter for offset of local declarations at current nesting level
+    private int fieldOffset = FIELD_OFFSET_START;
+    private int methodOffset = METHOD_OFFSET_START;
     int stErrors = 0;
 
     SymbolTableASTVisitor() {
@@ -274,8 +277,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
          */
         symTable.removeLast();
         nestingLevel--;
-        fieldOffset = -1;
-        methodOffset = 0;
+        fieldOffset = FIELD_OFFSET_START;
+        methodOffset = METHOD_OFFSET_START;
         return null;
     }
 
@@ -323,7 +326,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         }
         // stores counter for offset of declarations at previous nesting level.
         int prevNLDecOffset = decOffset;
-        decOffset = -2;
+        decOffset = DECLARATION_OFFSET_START;
         for (Node dec : n.declist) {
             visit(dec);
         }
