@@ -1,5 +1,6 @@
 package compiler;
 
+import com.sun.jdi.ClassType;
 import compiler.AST.*;
 import compiler.exc.*;
 import compiler.lib.*;
@@ -240,24 +241,39 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     @Override
     public Void visitNode(ClassNode n) throws VoidException {
         if (print) printNode(n);
+        /*
+         * Declare class symbol in global scope.
+         */
         final var globalScope = symTable.getFirst();
-        final var classEntry = new STentry(0, n.type, decOffset--);
+        final ClassTypeNode classType = new ClassTypeNode(new ArrayList<>(), new ArrayList<>());
+        final var classEntry = new STentry(0, classType, decOffset--);
         globalScope.put(n.id, classEntry);
-        nestingLevel++;
+        /*
+         * Create virtual table and appending scope in symbol table and class table.
+         */
         final Map<String, STentry> virtualTable = new HashMap<>();
         symTable.add(virtualTable);
+        classTable.put(n.id, virtualTable);
+        nestingLevel++;
+        /*
+         * Declare all fields in the virtual table.
+         */
         for (final var field : n.fields) {
             visit(field);
         }
+        /*
+         * Declare all methods in the virtual table.
+         */
         for (final var method : n.methods) {
             visit(method);
         }
-        classTable.put(n.id, virtualTable);
-        // Closing class scope
+        /*
+         * Closing class scope.
+         */
+        symTable.removeLast();
         nestingLevel--;
         fieldOffset = -1;
         methodOffset = 0;
-        symTable.removeLast();
         return null;
     }
 

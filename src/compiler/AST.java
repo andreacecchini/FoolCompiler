@@ -1,6 +1,7 @@
 package compiler;
 
 import compiler.lib.*;
+
 import java.util.*;
 
 public class AST {
@@ -468,6 +469,21 @@ public class AST {
         @Override
         public <S, E extends Exception> S accept(BaseASTVisitor<S, E> visitor) throws E {
             return visitor.visitNode(this);
+        }
+    }
+
+    public static class ClassTypeNode extends TypeNode {
+        final List<TypeNode> allFields;
+        final List<TypeNode> allMethods;
+
+        public ClassTypeNode(List<TypeNode> allFields, List<TypeNode> allMethods) {
+            this.allFields = allFields;
+            this.allMethods = allMethods;
+        }
+
+        @Override
+        public <S, E extends Exception> S accept(BaseASTVisitor<S, E> visitor) throws E {
+            return null;
         }
     }
 }
