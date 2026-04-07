@@ -3,16 +3,21 @@ package compiler;
 import compiler.AST.*;
 import compiler.exc.*;
 import compiler.lib.*;
+
 import java.util.*;
 
 public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
 
     private final List<Map<String, STentry>> symTable = new ArrayList<>();
+    private final Map<String, Map<String, STentry>> classTable = new HashMap<>();
     private int nestingLevel = 0; // current nesting level
     private int decOffset = -2; // counter for offset of local declarations at current nesting level
+    private int fieldOffset = -1;
+    private int methodOffset = 0;
     int stErrors = 0;
 
-    SymbolTableASTVisitor() {}
+    SymbolTableASTVisitor() {
+    }
 
     SymbolTableASTVisitor(boolean debug) {
         super(debug);
@@ -230,5 +235,113 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     public Void visitNode(IntNode n) {
         if (print) printNode(n, n.val.toString());
         return null;
+    }
+
+    @Override
+    public Void visitNode(ClassNode n) throws VoidException {
+        if (print) printNode(n);
+        final var globalScope = symTable.getFirst();
+        final var classEntry = new STentry(0, n.type, decOffset--);
+        globalScope.put(n.id, classEntry);
+        nestingLevel++;
+        final Map<String, STentry> virtualTable = new HashMap<>();
+        symTable.add(virtualTable);
+        for (final var field : n.fields) {
+            visit(field);
+        }
+        for (final var method : n.methods) {
+            visit(method);
+        }
+        classTable.put(n.id, virtualTable);
+        // Closing class scope
+        nestingLevel--;
+        fieldOffset = -1;
+        methodOffset = 0;
+        symTable.removeLast();
+        return null;
+    }
+
+    @Override
+    public Void visitNode(FieldNode n) throws VoidException {
+        if (print) printNode(n);
+        final var virtualTable = symTable.get(nestingLevel);
+        final var fieldEntry = new STentry(1, n.getType(), fieldOffset--);
+        virtualTable.put(n.id, fieldEntry);
+        return null;
+    }
+
+    @Override
+    public Void visitNode(MethodNode n) throws VoidException {
+        if (print) printNode(n);
+        final var virtualTable = symTable.get(nestingLevel);
+        List<TypeNode> parTypes = new ArrayList<>();
+        for (ParNode par : n.parlist) parTypes.add(par.getType());
+        STentry methodEntry =
+                new STentry(1, new ArrowTypeNode(parTypes, n.retType), methodOffset++);
+        virtualTable.put(n.id, methodEntry);
+        final HashMap<String, STentry> methodScope = new HashMap<>();
+        symTable.add(methodScope);
+        nestingLevel++;
+        for (Node dec : n.declist) visit(dec);
+        visit(n.exp);
+        symTable.removeLast();
+        nestingLevel--;
+        return null;
+    }
+
+    @Override
+    public Void visitNode(ClassCallNode n) throws VoidException {
+        if (print) printNode(n);
+        final var virtualTable = classTable.get(n.objId);
+        if (virtualTable == null) {
+            System.out.println("Object id " + n.objId + " at line " + n.getLine() + " not declared");
+            stErrors++;
+        } else {
+            final STentry methodEntry = virtualTable.get(n.methodId);
+            if (methodEntry == null) {
+                System.out.println("Method id " + n.methodId + " at line " + n.getLine() + " not declared");
+                stErrors++;
+            }
+            n.entry = methodEntry;
+            n.nl = nestingLevel;
+        }
+
+        return null;
+    }
+
+    @Override
+    public Void visitNode(NewNode n) throws VoidException {
+        if (print) printNode(n);
+        final var globalScope = symTable.getFirst();
+        final STentry classEntry = globalScope.get(n.id);
+        if (classEntry == null) {
+            System.out.println("Class id " + n.id + " at line " + n.getLine() + " not declared");
+            stErrors++;
+        } else {
+            final var virtualTable = classTable.get(n.id);
+            if (virtualTable == null) {
+                System.out.println("Class id " + n.id + " at line " + n.getLine() + " not in class table");
+                stErrors++;
+            }
+            for (Node arg : n.arglist) {
+                visit(arg);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitNode(EmptyNode n) throws VoidException {
+        return super.visitNode(n);
+    }
+
+    @Override
+    public Void visitNode(RefTypeNode n) throws VoidException {
+        return super.visitNode(n);
+    }
+
+    @Override
+    public Void visitNode(EmptyTypeNode n) throws VoidException {
+        return super.visitNode(n);
     }
 }

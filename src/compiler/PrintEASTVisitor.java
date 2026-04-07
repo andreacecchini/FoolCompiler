@@ -13,7 +13,9 @@ public class PrintEASTVisitor extends BaseEASTVisitor<Void, VoidException> {
     @Override
     public Void visitNode(ProgLetInNode n) {
         printNode(n);
-        for (Node dec : n.declist) visit(dec);
+        for (Node dec : n.declist) {
+            visit(dec);
+        }
         visit(n.exp);
         return null;
     }
@@ -198,6 +200,66 @@ public class PrintEASTVisitor extends BaseEASTVisitor<Void, VoidException> {
         printSTentry("type");
         visit(entry.type);
         printSTentry("offset " + entry.offset);
+        return null;
+    }
+
+    @Override
+    public Void visitNode(ClassNode n) throws VoidException {
+        printNode(n, n.id);
+        visit(n.type);
+        for (FieldNode field : n.fields) visit(field);
+        for (MethodNode method : n.methods) visit(method);
+        return null;
+    }
+
+    @Override
+    public Void visitNode(FieldNode node) throws VoidException {
+        printNode(node, node.id);
+        visit(node.getType());
+        return null;
+    }
+
+    @Override
+    public Void visitNode(MethodNode n) throws VoidException {
+        printNode(n, n.id);
+        visit(n.retType);
+        for (ParNode par : n.parlist) visit(par);
+        for (Node dec : n.declist) visit(dec);
+        visit(n.exp);
+        return null;
+    }
+
+    @Override
+    public Void visitNode(ClassCallNode node) throws VoidException {
+        printNode(node, node.objId + "." + node.methodId + " at nestinglevel " + node.nl);
+        visit(node.entry);
+        for (Node arg : node.arglist) visit(arg);
+        return null;
+    }
+
+    @Override
+    public Void visitNode(NewNode n) throws VoidException {
+        printNode(n, n.id);
+        visit(n.entry);
+        for (Node arg : n.arglist) visit(arg);
+        return null;
+    }
+
+    @Override
+    public Void visitNode(EmptyNode n) throws VoidException {
+        printNode(n);
+        return null;
+    }
+
+    @Override
+    public Void visitNode(RefTypeNode n) throws VoidException {
+        printNode(n, n.id);
+        return null;
+    }
+
+    @Override
+    public Void visitNode(EmptyTypeNode n) throws VoidException {
+        printNode(n);
         return null;
     }
 }

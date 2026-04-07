@@ -336,7 +336,7 @@ public class AST {
 
         @Override
         public <S, E extends Exception> S accept(BaseASTVisitor<S, E> visitor) throws E {
-            return null;
+            return visitor.visitNode(this);
         }
     }
 
@@ -351,7 +351,7 @@ public class AST {
 
         @Override
         public <S, E extends Exception> S accept(BaseASTVisitor<S, E> visitor) throws E {
-            return null;
+            return visitor.visitNode(this);
         }
     }
 
@@ -373,28 +373,26 @@ public class AST {
 
         @Override
         public <S, E extends Exception> S accept(BaseASTVisitor<S, E> visitor) throws E {
-            return null;
+            return visitor.visitNode(this);
         }
     }
 
     public static class ClassCallNode extends Node {
-        // obj.m()
         final String objId;
         final String methodId;
         final List<Node> arglist;
-        STentry objEntry;
-        STentry methodEntry;
+        STentry entry;
         int nl;
 
-        public ClassCallNode(String id1, String id2, List<Node> args) {
-            objId = id1;
-            methodId = id2;
+        public ClassCallNode(String obj, String id, List<Node> args) {
+            objId = obj;
+            methodId = id;
             arglist = Collections.unmodifiableList(args);
         }
 
         @Override
         public <S, E extends Exception> S accept(BaseASTVisitor<S, E> visitor) throws E {
-            return null;
+            return visitor.visitNode(this);
         }
     }
 
@@ -404,12 +402,13 @@ public class AST {
         STentry entry;
 
         public NewNode(String id, List<Node> args) {
+            this.id = id;
             arglist = Collections.unmodifiableList(args);
         }
 
         @Override
         public <S, E extends Exception> S accept(BaseASTVisitor<S, E> visitor) throws E {
-            return null;
+            return visitor.visitNode(this);
         }
     }
 
@@ -417,7 +416,7 @@ public class AST {
 
         @Override
         public <S, E extends Exception> S accept(BaseASTVisitor<S, E> visitor) throws E {
-            return null;
+            return visitor.visitNode(this);
         }
     }
 
@@ -461,14 +460,14 @@ public class AST {
 
         @Override
         public <S, E extends Exception> S accept(BaseASTVisitor<S, E> visitor) throws E {
-            return null;
+            return visitor.visitNode(this);
         }
     }
 
     public static class EmptyTypeNode extends TypeNode {
         @Override
         public <S, E extends Exception> S accept(BaseASTVisitor<S, E> visitor) throws E {
-            return null;
+            return visitor.visitNode(this);
         }
     }
 }
