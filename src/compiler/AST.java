@@ -324,14 +324,14 @@ public class AST {
 
     public static class ClassNode extends DecNode {
         final String id;
-        final List<Node> fields;
-        final List<Node> methods;
+        TypeNode type = null;
+        final List<FieldNode> fields;
+        final List<MethodNode> methods;
 
-        public ClassNode(String i, List<Node> fs, List<Node> ms, TypeNode t) {
+        public ClassNode(String i, List<FieldNode> fs, List<MethodNode> ms) {
             id = i;
             fields = Collections.unmodifiableList(fs);
             methods = Collections.unmodifiableList(ms);
-            type = t;
         }
 
         @Override
@@ -340,7 +340,7 @@ public class AST {
         }
     }
 
-    // VarNode
+    // ParNode
     public static class FieldNode extends DecNode {
         final String id;
 
@@ -403,7 +403,7 @@ public class AST {
         final List<Node> arglist;
         STentry entry;
 
-        public NewNode(List<Node> args) {
+        public NewNode(String id, List<Node> args) {
             arglist = Collections.unmodifiableList(args);
         }
 

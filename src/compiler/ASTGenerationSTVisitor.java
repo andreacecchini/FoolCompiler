@@ -5,7 +5,9 @@ import static compiler.lib.FOOLlib.*;
 import compiler.AST.*;
 import compiler.FOOLParser.*;
 import compiler.lib.*;
+
 import java.util.*;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -15,7 +17,8 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
     String indent;
     public boolean print;
 
-    ASTGenerationSTVisitor() {}
+    ASTGenerationSTVisitor() {
+    }
 
     ASTGenerationSTVisitor(boolean debug) {
         print = debug;
@@ -27,7 +30,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
         if (!parentClass.equals(
                 ParserRuleContext
                         .class)) // parentClass is the var context (and not ctxClass itself)
-        prefix = lowerizeFirstChar(extractCtxName(parentClass.getName())) + ": production #";
+            prefix = lowerizeFirstChar(extractCtxName(parentClass.getName())) + ": production #";
         System.out.println(indent + prefix + lowerizeFirstChar(extractCtxName(ctxClass.getName())));
     }
 
@@ -239,5 +242,58 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
         Node n = new CallNode(c.ID().getText(), arglist);
         n.setLine(c.ID().getSymbol().getLine());
         return n;
+    }
+
+    @Override
+    public Node visitCldec(CldecContext c) {
+        List<FieldNode> fieldsNode = new ArrayList<>();
+        int j = 0;
+        for (int i = 1; i < c.ID().size(); i++) {
+            FieldNode f = new FieldNode(c.ID(i).getText(), (TypeNode) visit(c.type(j++)));
+            f.setLine(c.ID(i).getSymbol().getLine());
+            fieldsNode.add(f);
+        }
+        List<MethodNode> methodsNode = new ArrayList<>();
+        for (int i = 0; i < c.methdec().size(); i++) {
+            methodsNode.add((MethodNode) visit(c.methdec(i)));
+        }
+        return new ClassNode(c.ID(0).getText(), fieldsNode, methodsNode);
+    }
+
+    @Override
+    public Node visitMethdec(MethdecContext c) {
+        if (print) printVarAndProdName(c);
+        List<ParNode> parList = new ArrayList<>();
+        for (int i = 1; i < c.ID().size(); i++) {
+            ParNode p = new ParNode(c.ID(i).getText(), (TypeNode) visit(c.type(i)));
+            p.setLine(c.ID(i).getSymbol().getLine());
+            parList.add(p);
+        }
+        List<DecNode> decList = new ArrayList<>();
+        for (DecContext dec : c.dec()) decList.add((DecNode) visit(dec));
+        Node n = null;
+        if (c.ID().size() > 0) { // non-incomplete ST
+            n =
+                    new MethodNode(
+                            c.ID(0).getText(),
+                            (TypeNode) visit(c.type(0)),
+                            parList,
+                            decList,
+                            visit(c.exp()));
+            n.setLine(c.FUN().getSymbol().getLine());
+        }
+        return n;
+    }
+
+    @Override
+    public Node visitNew(NewContext c) {
+        List<Node> arglist = new ArrayList<>();
+        for (ExpContext arg : c.exp()) arglist.add(visit(arg));
+        return new NewNode(c.ID().getText(), arglist);
+    }
+
+    @Override
+    public Node visitNull(NullContext ctx) {
+        return new EmptyNode();
     }
 }
