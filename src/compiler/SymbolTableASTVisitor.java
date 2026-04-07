@@ -343,16 +343,25 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     @Override
     public Void visitNode(ClassCallNode n) throws VoidException {
         if (print) printNode(n);
+        /*
+         * Checks if the class virtual table exists.
+         */
         final var virtualTable = classTable.get(n.objId);
         if (virtualTable == null) {
-            System.out.println("Object id " + n.objId + " at line " + n.getLine() + " not declared");
+            System.out.println("Class id " + n.objId + " at line " + n.getLine() + " not declared in class table");
             stErrors++;
         } else {
+            /*
+             * Checks if the method is declared inside the virtual table.
+             */
             final STentry methodEntry = virtualTable.get(n.methodId);
             if (methodEntry == null) {
                 System.out.println("Method id " + n.methodId + " at line " + n.getLine() + " not declared");
                 stErrors++;
             }
+            /*
+             * Links method use to its declaration.
+             */
             n.entry = methodEntry;
             n.nl = nestingLevel;
         }
@@ -363,17 +372,26 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     @Override
     public Void visitNode(NewNode n) throws VoidException {
         if (print) printNode(n);
+        /*
+         * Checks if the class symbol is declared in global scope.
+         */
         final var globalScope = symTable.getFirst();
         final STentry classEntry = globalScope.get(n.id);
         if (classEntry == null) {
             System.out.println("Class id " + n.id + " at line " + n.getLine() + " not declared");
             stErrors++;
         } else {
+            /*
+             * Checks if the class virtual table exists.
+             */
             final var virtualTable = classTable.get(n.id);
             if (virtualTable == null) {
                 System.out.println("Class id " + n.id + " at line " + n.getLine() + " not in class table");
                 stErrors++;
             }
+            /*
+             * Visit constructor arguments.
+             */
             for (Node arg : n.arglist) {
                 visit(arg);
             }
@@ -383,16 +401,16 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
 
     @Override
     public Void visitNode(EmptyNode n) throws VoidException {
-        return super.visitNode(n);
+        return null;
     }
 
     @Override
     public Void visitNode(RefTypeNode n) throws VoidException {
-        return super.visitNode(n);
+        return null;
     }
 
     @Override
     public Void visitNode(EmptyTypeNode n) throws VoidException {
-        return super.visitNode(n);
+        return null;
     }
 }
