@@ -9,6 +9,8 @@ import java.util.*;
 
 public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
 
+    private static final int GLOBAL_LEVEL = 0;
+    private static final int CLASS_LEVEL = GLOBAL_LEVEL + 1;
     private final List<Map<String, STentry>> symTable = new ArrayList<>();
     private final Map<String, Map<String, STentry>> classTable = new HashMap<>();
     private int nestingLevel = 0; // current nesting level
@@ -242,27 +244,27 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     public Void visitNode(ClassNode n) throws VoidException {
         if (print) printNode(n);
         /*
-         * Declare class symbol in global scope.
+         * Declares class symbol in global scope.
          */
-        final var globalScope = symTable.getFirst();
+        final var globalScope = symTable.get(GLOBAL_LEVEL);
         final ClassTypeNode classType = new ClassTypeNode(new ArrayList<>(), new ArrayList<>());
-        final var classEntry = new STentry(0, classType, decOffset--);
+        final var classEntry = new STentry(GLOBAL_LEVEL, classType, decOffset--);
         globalScope.put(n.id, classEntry);
         /*
-         * Create virtual table and appending scope in symbol table and class table.
+         * Creates virtual table and appending scope in symbol table and class table.
          */
         final Map<String, STentry> virtualTable = new HashMap<>();
         symTable.add(virtualTable);
         classTable.put(n.id, virtualTable);
         nestingLevel++;
         /*
-         * Declare all fields in the virtual table.
+         * Declares all fields in the virtual table.
          */
         for (final var field : n.fields) {
             visit(field);
         }
         /*
-         * Declare all methods in the virtual table.
+         * Declares all methods in the virtual table.
          */
         for (final var method : n.methods) {
             visit(method);
@@ -280,8 +282,12 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     @Override
     public Void visitNode(FieldNode n) throws VoidException {
         if (print) printNode(n);
+        /*
+         * Gets the virtual table of the class
+         * and declare field symbol there.
+         */
         final var virtualTable = symTable.get(nestingLevel);
-        final var fieldEntry = new STentry(1, n.getType(), fieldOffset--);
+        final var fieldEntry = new STentry(CLASS_LEVEL, n.getType(), fieldOffset--);
         virtualTable.put(n.id, fieldEntry);
         return null;
     }
@@ -289,19 +295,45 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     @Override
     public Void visitNode(MethodNode n) throws VoidException {
         if (print) printNode(n);
+        /*
+         * Gets the virtual table of the class
+         * and declare method symbol there.
+         */
         final var virtualTable = symTable.get(nestingLevel);
-        List<TypeNode> parTypes = new ArrayList<>();
-        for (ParNode par : n.parlist) parTypes.add(par.getType());
-        STentry methodEntry =
-                new STentry(1, new ArrowTypeNode(parTypes, n.retType), methodOffset++);
+        /*
+         * Gets method type as ArrowType.
+         */
+        final List<TypeNode> parTypes = new ArrayList<>();
+        for (ParNode par : n.parlist) {
+            parTypes.add(par.getType());
+        }
+        final STentry methodEntry = new STentry(
+                CLASS_LEVEL,
+                new ArrowTypeNode(parTypes, n.retType),
+                methodOffset++);
         virtualTable.put(n.id, methodEntry);
+        /*
+         * Opens method scope and declare pars. and decls. there.
+         */
         final HashMap<String, STentry> methodScope = new HashMap<>();
         symTable.add(methodScope);
         nestingLevel++;
-        for (Node dec : n.declist) visit(dec);
+        for (Node par : n.parlist) {
+            visit(par);
+        }
+        // stores counter for offset of declarations at previous nesting level.
+        int prevNLDecOffset = decOffset;
+        decOffset = -2;
+        for (Node dec : n.declist) {
+            visit(dec);
+        }
         visit(n.exp);
+        /*
+         * Quit method scope.
+         */
         symTable.removeLast();
         nestingLevel--;
+        decOffset = prevNLDecOffset;
         return null;
     }
 
