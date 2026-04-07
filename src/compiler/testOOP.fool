@@ -1,0 +1,8 @@
+let
+    class Account (money:int) {
+        fun getMon:int () money;
+    }
+    var money: int = 100;
+    var a: Account = new Account(money);
+in
+    print(a.getMon());
