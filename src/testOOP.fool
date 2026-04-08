@@ -12,5 +12,6 @@ let
     var age: int = 18
     var a: Account = new Account(money);
     var p: Person = new Person(age);
+    var empty: Account = null;
 in
     print(a.getMon());
