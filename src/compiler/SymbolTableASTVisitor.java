@@ -399,7 +399,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         /*
          * Checks if the class symbol is declared in global scope.
          */
-        final var globalScope = symTable.getFirst();
+        final var globalScope = symTable.get(GLOBAL_LEVEL);
         final STentry classEntry = globalScope.get(n.id);
         if (classEntry == null) {
             System.out.println("Class id " + n.id + " at line " + n.getLine() + " not declared");
@@ -419,6 +419,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
             for (Node arg : n.arglist) {
                 visit(arg);
             }
+            n.entry = classEntry;
         }
         return null;
     }

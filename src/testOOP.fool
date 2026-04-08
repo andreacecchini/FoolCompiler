@@ -1,15 +1,15 @@
 let
     class Account (money:int) {
-        fun getMon:int ()
+        fun getMon:int (isBonusAvailable: bool)
             let
                 var bonus: int = 10;
-            in money + bonus;
+            in if isBonusAvailable then { money + bonus } else { money };
     }
     class Person (age:int) {
         fun getAge:int() age;
     }
     var money: int = 100;
-    var age: int = 18
+    var age: int = 18;
     var a: Account = new Account(money);
     var p: Person = new Person(age);
     var empty: Account = null;
