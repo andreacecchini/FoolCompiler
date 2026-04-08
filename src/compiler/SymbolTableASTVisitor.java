@@ -19,7 +19,6 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     private final Map<String, Map<String, STentry>> classTable = new HashMap<>();
     private int nestingLevel = 0; // current nesting level
     private int decOffset = DECLARATION_OFFSET_START; // counter for offset of local declarations at current nesting level
-    private int fieldOffset = FIELD_OFFSET_START;
     private int methodOffset = METHOD_OFFSET_START;
     int stErrors = 0;
 
@@ -270,29 +269,31 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         /*
          * Declares all fields in the virtual table.
          */
+        int fieldOffset = FIELD_OFFSET_START;
         for (final var field : n.fields) {
+            final var pos = -fieldOffset - 1;
             final var fieldEntry = new STentry(CLASS_LEVEL, n.getType(), fieldOffset--);
             if (virtualTable.put(n.id, fieldEntry) != null) {
                 System.out.println("Field id " + n.id + " at line " + n.getLine() + " already declared");
                 stErrors++;
             }
             /* Updates class type with new field. */
-            classType.allFields.add(field.getType());
+            classType.allFields.add(pos, field.getType());
         }
         /*
          * Declares all methods in the virtual table.
          */
         for (final var method : n.methods) {
+            final var pos = methodOffset;
             visit(method);
             /* Updates class type with new method. */
-            classType.allMethods.add(method.getType());
+            classType.allMethods.add(pos, method.getType());
         }
         /*
          * Closing class scope.
          */
         symTable.removeLast();
         nestingLevel--;
-        fieldOffset = FIELD_OFFSET_START;
         methodOffset = METHOD_OFFSET_START;
         return null;
     }
