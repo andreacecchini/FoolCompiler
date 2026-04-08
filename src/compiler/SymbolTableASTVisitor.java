@@ -8,16 +8,25 @@ import java.util.*;
 
 public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
 
+    /*
+     * Constants.
+     */
     private static final int GLOBAL_LEVEL = 0;
     private static final int CLASS_LEVEL = GLOBAL_LEVEL + 1;
-    public static final int METHOD_OFFSET_START = 0;
-    public static final int FIELD_OFFSET_START = -1;
-    public static final int DECLARATION_OFFSET_START = -2;
+    private static final int METHOD_OFFSET_START = 0;
+    private static final int FIELD_OFFSET_START = -1;
+    private static final int DECLARATION_OFFSET_START = -2;
+    /* Symbol table as List of Tables. */
     private final List<Map<String, STentry>> symTable = new ArrayList<>();
+    /* Class table. */
     private final Map<String, Map<String, STentry>> classTable = new HashMap<>();
-    private int nestingLevel = 0; // current nesting level
-    private int decOffset = DECLARATION_OFFSET_START; // counter for offset of local declarations at current nesting level
+    /* Current nesting level. */
+    private int nestingLevel = GLOBAL_LEVEL;
+    /* Counter for offset of local declarations at current nesting level. */
+    private int decOffset = DECLARATION_OFFSET_START; //
+    /* Counter for offset of methods in a class. */
     private int methodOffset = METHOD_OFFSET_START;
+    /* Symbol table errors. */
     int stErrors = 0;
 
     SymbolTableASTVisitor() {
