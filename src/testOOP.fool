@@ -8,4 +8,4 @@ let
     var a: Account = new Account(100);
     var empty: Account = null;
 in
-    print(a.getMon());
+    print(a.getMon(true));
