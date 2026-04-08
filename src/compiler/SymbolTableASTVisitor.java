@@ -252,12 +252,16 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         final var globalScope = symTable.get(GLOBAL_LEVEL);
         final ClassTypeNode classType = new ClassTypeNode(new ArrayList<>(), new ArrayList<>());
         final var classEntry = new STentry(GLOBAL_LEVEL, classType, decOffset--);
-        globalScope.put(n.id, classEntry);
+        if (globalScope.put(n.id, classEntry) != null) {
+            System.out.println("Class id " + n.id + " at line " + n.getLine() + " already defined");
+            stErrors++;
+        }
         /*
          * Creates virtual table and appending scope in symbol table and class table.
          */
         final Map<String, STentry> virtualTable = new HashMap<>();
         symTable.add(virtualTable);
+        // Check has already been done in global scope.
         classTable.put(n.id, virtualTable);
         nestingLevel++;
         /*
@@ -291,7 +295,10 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
          */
         final var virtualTable = symTable.get(nestingLevel);
         final var fieldEntry = new STentry(CLASS_LEVEL, n.getType(), fieldOffset--);
-        virtualTable.put(n.id, fieldEntry);
+        if (virtualTable.put(n.id, fieldEntry) != null) {
+            System.out.println("Field id " + n.id + " at line " + n.getLine() + " already declared");
+            stErrors++;
+        }
         return null;
     }
 
@@ -314,17 +321,31 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
                 CLASS_LEVEL,
                 new ArrowTypeNode(parTypes, n.retType),
                 methodOffset++);
-        virtualTable.put(n.id, methodEntry);
+        if (virtualTable.put(n.id, methodEntry) != null) {
+            System.out.println("Method id " + n.id + " at line " + n.getLine() + " already declared");
+            stErrors++;
+        }
         /*
          * Opens method scope and declare pars. and decls. there.
          */
         final HashMap<String, STentry> methodScope = new HashMap<>();
         symTable.add(methodScope);
         nestingLevel++;
-        for (Node par : n.parlist) {
-            visit(par);
+        /*
+         * Declare method parameters.
+         */
+        int parOffset = 1;
+        for (ParNode par : n.parlist) {
+            final STentry parEntry = new STentry(nestingLevel, par.getType(), parOffset++);
+            if (methodScope.put(par.id, parEntry) != null) {
+                System.out.println(
+                        "Par id " + par.id + " at line " + n.getLine() + " already declared");
+                stErrors++;
+            }
         }
-        // stores counter for offset of declarations at previous nesting level.
+        /*
+         * Declare method declarations.
+         */
         int prevNLDecOffset = decOffset;
         decOffset = DECLARATION_OFFSET_START;
         for (Node dec : n.declist) {
