@@ -271,7 +271,11 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
          * Declares all fields in the virtual table.
          */
         for (final var field : n.fields) {
-            visit(field);
+            final var fieldEntry = new STentry(CLASS_LEVEL, n.getType(), fieldOffset--);
+            if (virtualTable.put(n.id, fieldEntry) != null) {
+                System.out.println("Field id " + n.id + " at line " + n.getLine() + " already declared");
+                stErrors++;
+            }
             /* Updates class type with new field. */
             classType.allFields.add(field.getType());
         }
@@ -290,22 +294,6 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         nestingLevel--;
         fieldOffset = FIELD_OFFSET_START;
         methodOffset = METHOD_OFFSET_START;
-        return null;
-    }
-
-    @Override
-    public Void visitNode(FieldNode n) throws VoidException {
-        if (print) printNode(n);
-        /*
-         * Gets the virtual table of the class
-         * and declare field symbol there.
-         */
-        final var virtualTable = symTable.get(nestingLevel);
-        final var fieldEntry = new STentry(CLASS_LEVEL, n.getType(), fieldOffset--);
-        if (virtualTable.put(n.id, fieldEntry) != null) {
-            System.out.println("Field id " + n.id + " at line " + n.getLine() + " already declared");
-            stErrors++;
-        }
         return null;
     }
 
