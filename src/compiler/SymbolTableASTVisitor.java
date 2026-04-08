@@ -23,7 +23,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     /* Current nesting level. */
     private int nestingLevel = GLOBAL_LEVEL;
     /* Counter for offset of local declarations at current nesting level. */
-    private int decOffset = DECLARATION_OFFSET_START; //
+    private int decOffset = DECLARATION_OFFSET_START;
     /* Counter for offset of methods in a class. */
     private int methodOffset = METHOD_OFFSET_START;
     /* Symbol table errors. */
@@ -36,10 +36,16 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         super(debug);
     } // enables print for debugging
 
+    /*
+     * Gets the STentry of `id` starting the search from the inner scope
+     * going to the outer ones.
+     */
     private STentry stLookup(String id) {
         int j = nestingLevel;
         STentry entry = null;
-        while (j >= 0 && entry == null) entry = symTable.get(j--).get(id);
+        while (j >= 0 && entry == null) {
+            entry = symTable.get(j--).get(id);
+        }
         return entry;
     }
 
