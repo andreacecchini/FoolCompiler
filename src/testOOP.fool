@@ -1,6 +1,9 @@
 let
     class Account (money:int) {
-        fun getMon:int () money;
+        fun getMon:int ()
+            let
+                var bonus: int = 10;
+            in money + bonus;
     }
     var money: int = 100;
     var a: Account = new Account(money);
