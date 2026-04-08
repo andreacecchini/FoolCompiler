@@ -5,27 +5,16 @@ let
         fun tail: List () t;
     }
 
-    /* Abstracts an (int, int) => int function. */
-    class BiIntFunction() {
-        fun apply: int (x:int, y: int) null;
-    }
+    /* reverse a list. */
+    fun reverse: List (l: List)
+        let
+            fun reverse_iter: List (remainder: List, reversed: List)
+                if (remainder == null)
+                    then { reversed }
+                    else { reverse_iter(remainder.tail(), new List(l.head(), reversed)}
+        in
+            reverse_iter(l, null);
 
-    /* (x, y) => x + y. */
-    class Sum() extends BiIntFunction() {
-        fun apply: int (x: int, y: int) x + y;
-    }
-
-    /* (x, y) => x * y. */
-    class Product() extends BiIntFunction() {
-        fun apply: int (x: int, y: int) x * y;
-    }
-
-    /* folding a list using f function starting from acc. */
-    fun fold: int (l: List, acc: int, f: BiIntFunction)
-            if (l == null)
-                then { acc }
-                else { fold(l.tail(), f.apply(acc, l.head()), f) }
-
-    var l: List = new List(1, new List(2, null));
+    var l: List = new List(1, new List(2, new List(3, new List(4, null)));
 in
-    print(fold(l, 0, new Sum()));
+    reverse(l)
