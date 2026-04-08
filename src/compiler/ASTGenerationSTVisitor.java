@@ -304,6 +304,12 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
     }
 
     @Override
+    public Node visitIdType(IdTypeContext c) {
+        if (print) printVarAndProdName(c);
+        return new RefTypeNode(c.ID().getText());
+    }
+
+    @Override
     public Node visitNull(NullContext ctx) {
         return new EmptyNode();
     }

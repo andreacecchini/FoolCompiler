@@ -363,7 +363,13 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         /*
          * Checks if the class virtual table exists.
          */
-        final var virtualTable = classTable.get(n.id1);
+        final STentry entry = stLookup(n.id1);
+        if (!(entry.type instanceof RefTypeNode)) {
+            System.out.println("Object id " + n.id1 + " at line " + n.getLine() + " not a ref type");
+            stErrors++;
+        }
+        final String className = ((RefTypeNode) entry.type).id;
+        final var virtualTable = classTable.get(className);
         if (virtualTable == null) {
             System.out.println("Class id " + n.id1 + " at line " + n.getLine() + " not declared in class table");
             stErrors++;
@@ -379,6 +385,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
             /*
              * Links method use to its declaration.
              */
+            n.entry = entry;
             n.methodEntry = methodEntry;
             n.nl = nestingLevel;
         }
