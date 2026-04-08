@@ -4,6 +4,7 @@ import com.sun.jdi.ClassType;
 import compiler.AST.*;
 import compiler.exc.*;
 import compiler.lib.*;
+import org.stringtemplate.v4.ST;
 
 import java.util.*;
 
@@ -60,13 +61,15 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         Map<String, STentry> hm = symTable.get(nestingLevel);
         List<TypeNode> parTypes = new ArrayList<>();
         for (ParNode par : n.parlist) parTypes.add(par.getType());
+        final var funType = new ArrowTypeNode(parTypes, n.retType);
         STentry entry =
-                new STentry(nestingLevel, new ArrowTypeNode(parTypes, n.retType), decOffset--);
+                new STentry(nestingLevel, funType, decOffset--);
         // inserimento di ID nella symtable
         if (hm.put(n.id, entry) != null) {
             System.out.println("Fun id " + n.id + " at line " + n.getLine() + " already declared");
             stErrors++;
         }
+        n.setType(funType);
         // creare una nuova hashmap per la symTable
         nestingLevel++;
         Map<String, STentry> hmn = new HashMap<>();
@@ -269,12 +272,16 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
          */
         for (final var field : n.fields) {
             visit(field);
+            /* Updates class type with new field. */
+            classType.allFields.add(field.getType());
         }
         /*
          * Declares all methods in the virtual table.
          */
         for (final var method : n.methods) {
             visit(method);
+            /* Updates class type with new method. */
+            classType.allMethods.add(method.getType());
         }
         /*
          * Closing class scope.
@@ -317,14 +324,16 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         for (ParNode par : n.parlist) {
             parTypes.add(par.getType());
         }
+        final var methodType = new ArrowTypeNode(parTypes, n.retType);
         final STentry methodEntry = new STentry(
                 CLASS_LEVEL,
-                new ArrowTypeNode(parTypes, n.retType),
+                methodType,
                 methodOffset++);
         if (virtualTable.put(n.id, methodEntry) != null) {
             System.out.println("Method id " + n.id + " at line " + n.getLine() + " already declared");
             stErrors++;
         }
+        n.setType(methodType);
         /*
          * Opens method scope and declare pars. and decls. there.
          */
