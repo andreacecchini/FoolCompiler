@@ -237,12 +237,9 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
             stErrors++;
         } else {
             /*
-             * Links STentry to function call.
+             * Links function use to its declaration.
              */
             n.entry = entry;
-            /*
-             * Sets nesting level use.
-             */
             n.nl = nestingLevel;
         }
         for (final Node arg : n.arglist) {
@@ -263,12 +260,9 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
             stErrors++;
         } else {
             /*
-             * Link STentry to id.
+             * Links id use to its declaration.
              * */
             n.entry = entry;
-            /*
-             * Sets nesting level use.
-             */
             n.nl = nestingLevel;
         }
         return null;
@@ -309,6 +303,10 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         return null;
     }
 
+    /*
+     * OOP part.
+     */
+
     @Override
     public Void visitNode(ClassNode n) throws VoidException {
         if (print) printNode(n);
@@ -319,17 +317,20 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         final ClassTypeNode classType = new ClassTypeNode(new ArrayList<>(), new ArrayList<>());
         final var classEntry = new STentry(GLOBAL_LEVEL, classType, decOffset--);
         if (globalScope.put(n.id, classEntry) != null) {
-            System.out.println("Class id " + n.id + " at line " + n.getLine() + " already defined");
+            System.out.println("Class id " + n.id + " at line " + n.getLine() + " already declared");
             stErrors++;
         }
         /*
-         * Creates virtual table and appending scope in symbol table and class table.
+         * Creates virtual table and appends it inside symbol and class table.
          */
         final Map<String, STentry> virtualTable = new HashMap<>();
         symTable.add(virtualTable);
-        // Check has already been done in global scope.
-        classTable.put(n.id, virtualTable);
         nestingLevel++;
+        /*
+         * No need to check if `id` is already present in class table
+         * because if it were a sterror would be thrown when appending in global scope.
+         */
+        classTable.put(n.id, virtualTable);
         /*
          * Declares all fields in the virtual table.
          */
@@ -370,9 +371,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
          * and declare method symbol there.
          */
         final var virtualTable = symTable.get(nestingLevel);
-        /*
-         * Gets method type as ArrowType.
-         */
+        /* Method type as ArrowType. */
         final List<TypeNode> parTypes = new ArrayList<>();
         for (ParNode par : n.parlist) {
             parTypes.add(par.getType());
@@ -388,29 +387,28 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         }
         n.setType(methodType);
         /*
-         * Opens method scope and declare pars. and decls. there.
+         * Opens method scope.
          */
         final HashMap<String, STentry> methodScope = new HashMap<>();
         symTable.add(methodScope);
         nestingLevel++;
         /*
-         * Declare method parameters.
+         * Declares method parameters.
          */
         int parOffset = 1;
-        for (ParNode par : n.parlist) {
+        for (final ParNode par : n.parlist) {
             final STentry parEntry = new STentry(nestingLevel, par.getType(), parOffset++);
             if (methodScope.put(par.id, parEntry) != null) {
-                System.out.println(
-                        "Par id " + par.id + " at line " + n.getLine() + " already declared");
+                System.out.println("Par id " + par.id + " at line " + n.getLine() + " already declared");
                 stErrors++;
             }
         }
         /*
-         * Declare method declarations.
+         * Declares local method declarations.
          */
-        int prevNLDecOffset = decOffset;
+        final int prevNLDecOffset = decOffset;
         decOffset = DECLARATION_OFFSET_START;
-        for (Node dec : n.declist) {
+        for (final Node dec : n.declist) {
             visit(dec);
         }
         visit(n.exp);
@@ -427,35 +425,45 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     public Void visitNode(ClassCallNode n) throws VoidException {
         if (print) printNode(n);
         /*
-         * Checks if the class virtual table exists.
+         * Checks if a STEntry for the object exists
+         * and, if exists, if the type stored in the entry is an object reference.
          */
         final STentry entry = stLookup(n.id1);
-        if (!(entry.type instanceof RefTypeNode)) {
-            System.out.println("Object id " + n.id1 + " at line " + n.getLine() + " not a ref type");
-            stErrors++;
-        }
-        final String className = ((RefTypeNode) entry.type).id;
-        final var virtualTable = classTable.get(className);
-        if (virtualTable == null) {
-            System.out.println("Class id " + n.id1 + " at line " + n.getLine() + " not declared in class table");
+        if (entry == null) {
+            System.out.println("Object id" + n.id1 + " at line " + n.getLine() + " not declared");
             stErrors++;
         } else {
-            /*
-             * Checks if the method is declared inside the virtual table.
-             */
-            final STentry methodEntry = virtualTable.get(n.id2);
-            if (methodEntry == null) {
-                System.out.println("Method id " + n.id2 + " at line " + n.getLine() + " not declared");
+            if (!(entry.type instanceof RefTypeNode)) {
+                System.out.println("Object id " + n.id1 + " at line " + n.getLine() + " not a ref type");
                 stErrors++;
+            } else {
+                /*
+                 * Gets the virtual table of the class.
+                 */
+                final String className = ((RefTypeNode) entry.type).id;
+                final var virtualTable = classTable.get(className);
+                if (virtualTable == null) {
+                    System.out.println("Class id " + n.id1 + " at line " + n.getLine() + " not declared in class table");
+                    stErrors++;
+                } else {
+                    /*
+                     * Checks if the method is declared inside the virtual table.
+                     */
+                    final STentry methodEntry = virtualTable.get(n.id2);
+                    if (methodEntry == null) {
+                        System.out.println("Method id " + n.id2 + " at line " + n.getLine() + " not declared");
+                        stErrors++;
+                    } else {
+                        /*
+                         * Links method use to its declaration.
+                         */
+                        n.entry = entry;
+                        n.methodEntry = methodEntry;
+                        n.nl = nestingLevel;
+                    }
+                }
             }
-            /*
-             * Links method use to its declaration.
-             */
-            n.entry = entry;
-            n.methodEntry = methodEntry;
-            n.nl = nestingLevel;
         }
-
         return null;
     }
 
@@ -478,30 +486,37 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
             if (virtualTable == null) {
                 System.out.println("Class id " + n.id + " at line " + n.getLine() + " not in class table");
                 stErrors++;
+            } else {
+                /*
+                 * Visit constructor arguments.
+                 */
+                for (final Node arg : n.arglist) {
+                    visit(arg);
+                }
+                /*
+                 * Links constructor to class declaration.
+                 */
+                n.entry = classEntry;
             }
-            /*
-             * Visit constructor arguments.
-             */
-            for (Node arg : n.arglist) {
-                visit(arg);
-            }
-            n.entry = classEntry;
         }
         return null;
     }
 
     @Override
     public Void visitNode(EmptyNode n) throws VoidException {
+        if (print) printNode(n);
         return null;
     }
 
     @Override
     public Void visitNode(RefTypeNode n) throws VoidException {
+        if (print) printNode(n);
         return null;
     }
 
     @Override
     public Void visitNode(EmptyTypeNode n) throws VoidException {
+        if (print) printNode(n);
         return null;
     }
 }
