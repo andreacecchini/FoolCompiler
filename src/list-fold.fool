@@ -26,15 +26,12 @@ let
                 then { acc }
                 else { fold(l.tail(), f.apply(acc, l.head()), f) }
 
-    fun reverse: List (l: List)
-        let
-            fun reverse_iter: List (remainder: List, reversed: List)
-                if (remainder == null)
-                    then { reversed }
-                    else { reverse_iter(remainder.tail(), new List(l.head(), reversed)}
-        in
-            reverse_iter(l, null);
+    /* Empty node list. */
+    fun nil: List () null;
 
-    var l: List = new List(1, new List(2, null));
+    /* Node list. */
+    fun cons: List (h: int, t: List) new List(h, t);
+
+    var l: List = cons(1, cons(2, cons(3, cons(4, empty()))));
 in
     print(fold(l, 0, new Sum()));
