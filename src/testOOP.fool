@@ -9,7 +9,8 @@ let
         fun getAge:int() age;
     }
     var money: int = 100;
+    var age: int = 18
     var a: Account = new Account(money);
-    var p: Person = new Person(18);
+    var p: Person = new Person(age);
 in
     print(a.getMon());

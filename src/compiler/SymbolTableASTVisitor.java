@@ -1,10 +1,8 @@
 package compiler;
 
-import com.sun.jdi.ClassType;
 import compiler.AST.*;
 import compiler.exc.*;
 import compiler.lib.*;
-import org.stringtemplate.v4.ST;
 
 import java.util.*;
 
@@ -272,9 +270,9 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         int fieldOffset = FIELD_OFFSET_START;
         for (final var field : n.fields) {
             final var pos = -fieldOffset - 1;
-            final var fieldEntry = new STentry(CLASS_LEVEL, n.getType(), fieldOffset--);
-            if (virtualTable.put(n.id, fieldEntry) != null) {
-                System.out.println("Field id " + n.id + " at line " + n.getLine() + " already declared");
+            final var fieldEntry = new STentry(CLASS_LEVEL, field.getType(), fieldOffset--);
+            if (virtualTable.put(field.id, fieldEntry) != null) {
+                System.out.println("Field id " + field.id + " at line " + field.getLine() + " already declared");
                 stErrors++;
             }
             /* Updates class type with new field. */
@@ -365,23 +363,23 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         /*
          * Checks if the class virtual table exists.
          */
-        final var virtualTable = classTable.get(n.objId);
+        final var virtualTable = classTable.get(n.id1);
         if (virtualTable == null) {
-            System.out.println("Class id " + n.objId + " at line " + n.getLine() + " not declared in class table");
+            System.out.println("Class id " + n.id1 + " at line " + n.getLine() + " not declared in class table");
             stErrors++;
         } else {
             /*
              * Checks if the method is declared inside the virtual table.
              */
-            final STentry methodEntry = virtualTable.get(n.methodId);
+            final STentry methodEntry = virtualTable.get(n.id2);
             if (methodEntry == null) {
-                System.out.println("Method id " + n.methodId + " at line " + n.getLine() + " not declared");
+                System.out.println("Method id " + n.id2 + " at line " + n.getLine() + " not declared");
                 stErrors++;
             }
             /*
              * Links method use to its declaration.
              */
-            n.entry = methodEntry;
+            n.methodEntry = methodEntry;
             n.nl = nestingLevel;
         }
 
