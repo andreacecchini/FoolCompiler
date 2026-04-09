@@ -21,6 +21,9 @@ let
         in
             reverse_iter(l, null);
 
-    var l: List = cons(1, cons(2, cons(3, cons(4, empty())));
+    fun printList: List (l: List)
+        if (l == null) then { print(null) } else { new List(print(l.head()), printList(l.tail())) }
+        
+    var l: List = cons(1, cons(2, cons(3, cons(4, empty()))));
 in
-    reverse(l);
+    printList(reverse(l));
