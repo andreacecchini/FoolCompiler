@@ -260,4 +260,35 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
         if (print) printNode(n, n.val.toString());
         return "push " + n.val;
     }
+
+    @Override
+    public String visitNode(ClassNode n) throws VoidException {
+        // TODO Auto-generated method stub
+        return super.visitNode(n);
+    }
+
+    @Override
+    public String visitNode(MethodNode n) throws VoidException {
+        // TODO Auto-generated method stub
+        return super.visitNode(n);
+    }
+
+    @Override
+    public String visitNode(ClassCallNode node) throws VoidException {
+        // TODO Auto-generated method stub
+        return super.visitNode(node);
+    }
+
+    @Override
+    public String visitNode(NewNode n) throws VoidException {
+        // TODO Auto-generated method stub
+        return super.visitNode(n);
+    }
+
+    @Override
+    public String visitNode(EmptyNode n) throws VoidException {
+        // TODO Auto-generated method stub
+        return super.visitNode(n);
+    }
+
 }
