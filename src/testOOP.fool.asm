@@ -30,7 +30,7 @@ add
 shp
 push -1
 lfp
-push 0
+push 1
 lfp
 push -3
 add

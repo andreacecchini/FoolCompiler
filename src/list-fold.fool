@@ -24,7 +24,7 @@ let
     fun fold: int (l: List, acc: int, f: BiIntFunction)
             if (l == null)
                 then { acc }
-                else { fold(l.tail(), f.apply(acc, l.head()), f) }
+                else { fold(l.tail(), f.apply(acc, l.head()), f) };
 
     /* Empty node list. */
     fun nil: List () null;
@@ -32,6 +32,6 @@ let
     /* Node list. */
     fun cons: List (h: int, t: List) new List(h, t);
 
-    var l: List = cons(1, cons(2, cons(3, cons(4, empty()))));
+    var l: List = cons(1, cons(2, cons(3, cons(4, nil()))));
 in
     print(fold(l, 0, new Sum()));
