@@ -377,6 +377,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
             parTypes.add(par.getType());
         }
         final var methodType = new ArrowTypeNode(parTypes, n.retType);
+        n.offset = methodOffset;
         final STentry methodEntry = new STentry(
                 CLASS_LEVEL,
                 methodType,

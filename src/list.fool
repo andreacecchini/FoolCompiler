@@ -1,29 +1,26 @@
 let
-    /* List h :: t. */
     class List(h: int, t: List) {
         fun head: int () h;
         fun tail: List () t;
     }
 
-    /* Empty node list. */
     fun nil: List () null;
 
-    /* Node list. */
     fun cons: List (h: int, t: List) new List(h, t);
 
-    /* reverse a list. */
     fun reverse: List (l: List)
         let
-            fun reverse_iter: List (remainder: List, reversed: List)
-                if (remainder == nil)
+            fun reverseIter: List (remainder: List, reversed: List)
+                if (remainder == nil())
                     then { reversed }
-                    else { reverse_iter(remainder.tail(), cons(l.head(), reversed)) }
-        in
-            reverse_iter(l, null);
+                    else { reverseIter(remainder.tail(), cons(remainder.head(), reversed)) };
+        in reverseIter(l, null);
 
     fun printList: List (l: List)
-        if (l == nil) then { print(null) } else { new List(print(l.head()), printList(l.tail())) }
+        if (l == nil()) 
+            then { print(null) } 
+            else { new List(print(l.head()), printList(l.tail())) };
         
-    var l: List = cons(1, cons(2, cons(3, cons(4, empty()))));
+    var l: List = cons(1, cons(2, cons(3, cons(4, nil()))));
 in
     printList(reverse(l));
