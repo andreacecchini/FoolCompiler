@@ -201,6 +201,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
                 "stm", // set $tm to popped value (with the aim of duplicating top of stack)
                 "ltm", // load Access Link (pointer to frame of function "id" declaration)
                 "ltm", // duplicate top of stack
+                n.entry.offset >= 0 ? "lw" : "",
                 "push " + n.entry.offset,
                 "add", // compute address of "id" declaration
                 "lw", // load address of "id" function

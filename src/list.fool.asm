@@ -28,6 +28,7 @@ lfp
 stm
 ltm
 ltm
+
 push -3
 add
 lw
@@ -37,6 +38,7 @@ lfp
 stm
 ltm
 ltm
+
 push -4
 add
 lw
@@ -46,6 +48,7 @@ lfp
 stm
 ltm
 ltm
+
 push -4
 add
 lw
@@ -55,6 +58,7 @@ lfp
 stm
 ltm
 ltm
+
 push -4
 add
 lw
@@ -64,10 +68,12 @@ lfp
 stm
 ltm
 ltm
+
 push -4
 add
 lw
 js
+lfp
 lfp
 lfp
 lfp
@@ -78,6 +84,16 @@ lfp
 stm
 ltm
 ltm
+
+push -6
+add
+lw
+js
+lfp
+stm
+ltm
+ltm
+
 push -5
 add
 lw
@@ -86,6 +102,7 @@ lfp
 stm
 ltm
 ltm
+
 push -6
 add
 lw
@@ -196,6 +213,7 @@ lw
 stm
 ltm
 ltm
+
 push -3
 add
 lw
@@ -233,6 +251,7 @@ lw
 stm
 ltm
 ltm
+
 push -4
 add
 lw
@@ -255,6 +274,7 @@ lw
 stm
 ltm
 ltm
+
 push -2
 add
 lw
@@ -290,6 +310,7 @@ lfp
 stm
 ltm
 ltm
+
 push -2
 add
 lw
@@ -317,6 +338,7 @@ lw
 stm
 ltm
 ltm
+
 push -3
 add
 lw
@@ -363,6 +385,7 @@ lw
 stm
 ltm
 ltm
+
 push -6
 add
 lw
