@@ -6,6 +6,8 @@ import compiler.AST.*;
 import compiler.exc.*;
 import compiler.lib.*;
 
+import java.util.zip.ZipOutputStream;
+
 // visitNode(n) fa il type checking di un Node n e ritorna:
 // - per una espressione, il suo tipo (oggetto BoolTypeNode o IntTypeNode)
 // - per una dichiarazione, "null"; controlla la correttezza interna della dichiarazione
@@ -322,10 +324,31 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode, TypeExceptio
     public TypeNode visitNode(ClassNode n) throws TypeException {
         if (print) printNode(n, n.id);
         /*
+         * Setting super type rel.
+         */
+        if (n.superId != null) {
+            // inheritance
+            SUPER_TYPE.put(n.id, n.superId);
+        }
+        /*
          * Type checks class methods.
          */
         for (final Node method : n.methods) {
             visit(method);
+        }
+        if (n.superEntry != null) {
+            if (n.superEntry.type instanceof ClassTypeNode baseType && n.type instanceof ClassTypeNode currentType) {
+                for (int i = 0; i < baseType.allFields.size(); i++) {
+                    if (!isSubtype(currentType.allFields.get(i), baseType.allFields.get(i))) {
+                        throw new TypeException("Wrong type for field overriding", n.getLine());
+                    }
+                }
+                for (int i = 0; i < baseType.allMethods.size(); i++) {
+                    if (!isSubtype(currentType.allFields.get(i), baseType.allFields.get(i))) {
+                        throw new TypeException("Wrong type for method overriding", n.getLine());
+                    }
+                }
+            }
         }
         return null;
     }

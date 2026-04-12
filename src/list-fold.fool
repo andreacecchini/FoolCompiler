@@ -7,7 +7,7 @@ let
 
     /* Abstracts an (int, int) => int function. */
     class BiIntFunction () {
-        fun apply: int (x:int, y: int) null;
+        fun apply: int (x:int, y: int) 0;
     }
 
     /* (x, y) => x + y. */

@@ -316,6 +316,24 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         final var globalScope = symTable.get(GLOBAL_LEVEL);
         final ClassTypeNode classType = new ClassTypeNode(new ArrayList<>(), new ArrayList<>());
         final var classEntry = new STentry(GLOBAL_LEVEL, classType, decOffset--);
+        if (n.superId != null) {
+            // inheritance
+            final var superEntry = globalScope.get(n.superId);
+            if (superEntry == null) {
+                System.out.println("Extending from undefined class " + n.superId);
+                stErrors++;
+            } else {
+                if (superEntry.type instanceof ClassTypeNode baseType) {
+                    // inherits class type from super
+                    classType.allFields.addAll(baseType.allFields);
+                    classType.allMethods.addAll(baseType.allMethods);
+                    n.superEntry = superEntry;
+                } else {
+                    System.out.println("Extending from a non class " + n.superId);
+                    stErrors++;
+                }
+            }
+        }
         if (globalScope.put(n.id, classEntry) != null) {
             System.out.println(
                     "Class id " + n.id + " at line " + n.getLine() + " already declared");
@@ -325,6 +343,11 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
          * Creates virtual table and appends it inside symbol and class table.
          */
         final Map<String, STentry> virtualTable = new HashMap<>();
+        if (n.superId != null) {
+            // inheritance
+            final var superVirtualTable = classTable.get(n.superId);
+            virtualTable.putAll(superVirtualTable);
+        }
         symTable.add(virtualTable);
         nestingLevel++;
         /*
@@ -335,25 +358,34 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         /*
          * Declares all fields in the virtual table.
          */
-        int fieldOffset = FIELD_OFFSET_START;
+        int fieldOffset = classType.allFields.isEmpty() ? FIELD_OFFSET_START : -classType.allFields.size()-1;
         for (final var field : n.fields) {
-            final var pos = -fieldOffset - 1;
-            final var fieldEntry = new STentry(CLASS_LEVEL, field.getType(), fieldOffset--);
-            if (virtualTable.put(field.id, fieldEntry) != null) {
-                System.out.println(
-                        "Field id "
-                                + field.id
-                                + " at line "
-                                + field.getLine()
-                                + " already declared");
-                stErrors++;
+            final var oldEntry = virtualTable.get(field.id);
+            if (oldEntry != null) {
+                // field overriding
+                final var overriddenOffset = oldEntry.offset;
+                final var overriddenEntry = new STentry(CLASS_LEVEL, field.getType(), overriddenOffset);
+                final var overriddenPos = -overriddenOffset - 1;
+                if (overriddenEntry.type instanceof ArrowTypeNode) {
+                    System.out.println("Overriding method " + field.id + " with a field");
+                    stErrors++;
+                } else {
+                    virtualTable.put(field.id, overriddenEntry);
+                    classType.allFields.set(overriddenPos, field.getType());
+                }
+            } else {
+                // new field
+                final var pos = -fieldOffset - 1;
+                final var fieldEntry = new STentry(CLASS_LEVEL, field.getType(), fieldOffset--);
+                virtualTable.put(field.id, fieldEntry);
+                /* Updates class type with new field. */
+                classType.allFields.add(pos, field.getType());
             }
-            /* Updates class type with new field. */
-            classType.allFields.add(pos, field.getType());
         }
         /*
          * Declares all methods in the virtual table.
          */
+        methodOffset = classType.allMethods.isEmpty() ? METHOD_OFFSET_START : classType.allMethods.size();
         for (final var method : n.methods) {
             final var pos = methodOffset;
             visit(method);
@@ -383,12 +415,23 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
             parTypes.add(par.getType());
         }
         final var methodType = new ArrowTypeNode(parTypes, n.retType);
-        n.offset = methodOffset;
-        final STentry methodEntry = new STentry(CLASS_LEVEL, methodType, methodOffset++);
-        if (virtualTable.put(n.id, methodEntry) != null) {
-            System.out.println(
-                    "Method id " + n.id + " at line " + n.getLine() + " already declared");
-            stErrors++;
+        final var oldEntry = virtualTable.get(n.id);
+        if (oldEntry != null) {
+            // overriding
+            if (!(oldEntry.type instanceof ArrowTypeNode)) {
+                System.out.println("Overriding field " + n.id + " with a method");
+                stErrors++;
+            } else {
+                final var oldOffset = oldEntry.offset;
+                n.offset = oldOffset;
+                final var overridingEntry = new STentry(CLASS_LEVEL, methodType, oldOffset);
+                virtualTable.put(n.id, overridingEntry);
+            }
+        } else {
+            // new method
+            n.offset = methodOffset;
+            final STentry methodEntry = new STentry(CLASS_LEVEL, methodType, methodOffset++);
+            virtualTable.put(n.id, methodEntry);
         }
         n.setType(methodType);
         /*

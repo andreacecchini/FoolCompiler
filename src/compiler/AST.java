@@ -329,6 +329,7 @@ public class AST {
         final String id;
         // Superclass Id
         final String superId;
+        STentry superEntry;
         TypeNode type = null;
         final List<FieldNode> fields;
         final List<MethodNode> methods;
