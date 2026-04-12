@@ -2,18 +2,16 @@ package compiler;
 
 import static compiler.lib.FOOLlib.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import compiler.AST.*;
 import compiler.exc.*;
 import compiler.lib.*;
+import java.util.ArrayList;
+import java.util.List;
 import svm.ExecuteVM;
 
 public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidException> {
 
-    CodeGenerationASTVisitor() {
-    }
+    CodeGenerationASTVisitor() {}
 
     CodeGenerationASTVisitor(boolean debug) {
         super(false, debug);
@@ -21,11 +19,9 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 
     @Override
     public String visitNode(ProgLetInNode n) {
-        if (print)
-            printNode(n);
+        if (print) printNode(n);
         String declCode = null;
-        for (Node dec : n.declist)
-            declCode = nlJoin(declCode, visit(dec));
+        for (Node dec : n.declist) declCode = nlJoin(declCode, visit(dec));
         return nlJoin(
                 "push 0",
                 declCode, // generate code for declarations (allocation)
@@ -36,22 +32,19 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 
     @Override
     public String visitNode(ProgNode n) {
-        if (print)
-            printNode(n);
+        if (print) printNode(n);
         return nlJoin(visit(n.exp), "halt");
     }
 
     @Override
     public String visitNode(FunNode n) {
-        if (print)
-            printNode(n, n.id);
+        if (print) printNode(n, n.id);
         String declCode = null, popDecl = null, popParl = null;
         for (Node dec : n.declist) {
             declCode = nlJoin(declCode, visit(dec));
             popDecl = nlJoin(popDecl, "pop");
         }
-        for (int i = 0; i < n.parlist.size(); i++)
-            popParl = nlJoin(popParl, "pop");
+        for (int i = 0; i < n.parlist.size(); i++) popParl = nlJoin(popParl, "pop");
         String funl = freshFunLabel();
         putCode(
                 nlJoin(
@@ -69,28 +62,25 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
                         "ltm", // load $tm value (function result)
                         "lra", // load $ra value
                         "js" // jump to to popped address
-                ));
+                        ));
         return "push " + funl;
     }
 
     @Override
     public String visitNode(VarNode n) {
-        if (print)
-            printNode(n, n.id);
+        if (print) printNode(n, n.id);
         return visit(n.exp);
     }
 
     @Override
     public String visitNode(PrintNode n) {
-        if (print)
-            printNode(n);
+        if (print) printNode(n);
         return nlJoin(visit(n.exp), "print");
     }
 
     @Override
     public String visitNode(IfNode n) {
-        if (print)
-            printNode(n);
+        if (print) printNode(n);
         String l1 = freshLabel();
         String l2 = freshLabel();
         return nlJoin(
@@ -106,8 +96,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 
     @Override
     public String visitNode(EqualNode n) {
-        if (print)
-            printNode(n);
+        if (print) printNode(n);
         String l1 = freshLabel();
         String l2 = freshLabel();
         return nlJoin(
@@ -123,8 +112,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 
     @Override
     public String visitNode(GreaterEqualNode n) {
-        if (print)
-            printNode(n);
+        if (print) printNode(n);
         String l1 = freshLabel();
         String l2 = freshLabel();
         return nlJoin(
@@ -140,8 +128,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 
     @Override
     public String visitNode(LessEqualNode n) {
-        if (print)
-            printNode(n);
+        if (print) printNode(n);
         String l1 = freshLabel();
         String l2 = freshLabel();
         return nlJoin(
@@ -157,41 +144,35 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 
     @Override
     public String visitNode(TimesNode n) {
-        if (print)
-            printNode(n);
+        if (print) printNode(n);
         return nlJoin(visit(n.left), visit(n.right), "mult");
     }
 
     @Override
     public String visitNode(DivNode n) {
-        if (print)
-            printNode(n);
+        if (print) printNode(n);
         return nlJoin(visit(n.left), visit(n.right), "div");
     }
 
     @Override
     public String visitNode(PlusNode n) {
-        if (print)
-            printNode(n);
+        if (print) printNode(n);
         return nlJoin(visit(n.left), visit(n.right), "add");
     }
 
     @Override
     public String visitNode(MinusNode n) {
-        if (print)
-            printNode(n);
+        if (print) printNode(n);
         return nlJoin(visit(n.left), visit(n.right), "sub");
     }
 
     @Override
     public String visitNode(CallNode n) {
-        if (print)
-            printNode(n, n.id);
+        if (print) printNode(n, n.id);
         String argCode = null, getAR = null;
         for (int i = n.arglist.size() - 1; i >= 0; i--)
             argCode = nlJoin(argCode, visit(n.arglist.get(i)));
-        for (int i = 0; i < n.nl - n.entry.nl; i++)
-            getAR = nlJoin(getAR, "lw");
+        for (int i = 0; i < n.nl - n.entry.nl; i++) getAR = nlJoin(getAR, "lw");
         return nlJoin(
                 "lfp", // load Control Link (pointer to frame of function "id" caller)
                 argCode, // generate code for argument expressions in reversed order
@@ -206,16 +187,14 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
                 "add", // compute address of "id" declaration
                 "lw", // load address of "id" function
                 "js" // jump to popped address (saving address of subsequent instruction in $ra)
-        );
+                );
     }
 
     @Override
     public String visitNode(IdNode n) {
-        if (print)
-            printNode(n, n.id);
+        if (print) printNode(n, n.id);
         String getAR = null;
-        for (int i = 0; i < n.nl - n.entry.nl; i++)
-            getAR = nlJoin(getAR, "lw");
+        for (int i = 0; i < n.nl - n.entry.nl; i++) getAR = nlJoin(getAR, "lw");
         return nlJoin(
                 "lfp",
                 getAR, // retrieve address of frame containing "id" declaration
@@ -223,20 +202,18 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
                 "push " + n.entry.offset,
                 "add", // compute address of "id" declaration
                 "lw" // load value of "id" variable
-        );
+                );
     }
 
     @Override
     public String visitNode(BoolNode n) {
-        if (print)
-            printNode(n, n.val.toString());
+        if (print) printNode(n, n.val.toString());
         return "push " + (n.val ? 1 : 0);
     }
 
     @Override
     public String visitNode(NotNode n) {
-        if (print)
-            printNode(n, n.bool.toString());
+        if (print) printNode(n, n.bool.toString());
         String lTrue = freshLabel();
         String lEnd = freshLabel();
         return nlJoin(
@@ -252,8 +229,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 
     @Override
     public String visitNode(OrNode n) {
-        if (print)
-            printNode(n);
+        if (print) printNode(n);
         String lTrue = freshLabel();
         String lEnd = freshLabel();
         return nlJoin(
@@ -269,8 +245,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 
     @Override
     public String visitNode(AndNode n) {
-        if (print)
-            printNode(n);
+        if (print) printNode(n);
         String lTrue = freshLabel();
         String lEnd = freshLabel();
         return nlJoin(
@@ -286,8 +261,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 
     @Override
     public String visitNode(IntNode n) {
-        if (print)
-            printNode(n, n.val.toString());
+        if (print) printNode(n, n.val.toString());
         return "push " + n.val;
     }
 
@@ -298,14 +272,16 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
         for (final MethodNode method : n.methods) {
             visit(method);
             dispatchTable.add(method.offset, method.label);
-            dispatchTableGeneration = nlJoin(dispatchTableGeneration,
-                    "push " + method.label, // Push label in heap
-                    "lhp",
-                    "sw",
-                    "lhp", // Increment heap pointer
-                    "push 1",
-                    "add",
-                    "shp");
+            dispatchTableGeneration =
+                    nlJoin(
+                            dispatchTableGeneration,
+                            "push " + method.label, // Push label in heap
+                            "lhp",
+                            "sw",
+                            "lhp", // Increment heap pointer
+                            "push 1",
+                            "add",
+                            "shp");
         }
         return nlJoin(
                 "lhp", // push $hp into stack (dispatch pointer to return at the end).
@@ -339,19 +315,17 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
                         "ltm", // load $tm value (function result)
                         "lra", // load $ra value
                         "js" // jump to to popped address
-                ));
+                        ));
         return "";
     }
 
     @Override
     public String visitNode(ClassCallNode n) throws VoidException {
-        if (print)
-            printNode(n, n.id2);
+        if (print) printNode(n, n.id2);
         String argCode = null, getAR = null;
         for (int i = n.arglist.size() - 1; i >= 0; i--)
             argCode = nlJoin(argCode, visit(n.arglist.get(i)));
-        for (int i = 0; i < n.nl - n.entry.nl; i++)
-            getAR = nlJoin(getAR, "lw");
+        for (int i = 0; i < n.nl - n.entry.nl; i++) getAR = nlJoin(getAR, "lw");
         return nlJoin(
                 "lfp", // load Control Link (pointer to frame of function "id" caller)
                 argCode, // generate code for argument expressions in reversed order
@@ -369,20 +343,21 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
                 "add", // compute address of "id2" method declaration
                 "lw", // load address of "id2" method
                 "js" // jump to popped address (saving address of subsequent instruction in $ra)
-        );
+                );
     }
 
     @Override
     public String visitNode(NewNode n) throws VoidException {
         return nlJoin(
                 n.arglist.stream().map(this::visit).reduce("", FOOLlib::nlJoin),
-                n.arglist.stream().map(arg -> nlJoin(
-                        "lhp", // move stack value on heap
-                        "sw",
-                        "lhp", // increment $hp
-                        "push 1",
-                        "add",
-                        "shp")).reduce("", FOOLlib::nlJoin),
+                n.arglist.stream()
+                        .map(
+                                arg ->
+                                        nlJoin(
+                                                "lhp", // move stack value on heap
+                                                "sw", "lhp", // increment $hp
+                                                "push 1", "add", "shp"))
+                        .reduce("", FOOLlib::nlJoin),
                 "push " + ExecuteVM.MEMSIZE,
                 "push " + n.entry.offset,
                 "add",
@@ -393,14 +368,11 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
                 "lhp",
                 "push 1",
                 "add",
-                "shp"
-            );
-
+                "shp");
     }
 
     @Override
     public String visitNode(EmptyNode n) throws VoidException {
         return "push -1";
     }
-
 }

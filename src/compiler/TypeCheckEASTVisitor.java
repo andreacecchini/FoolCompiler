@@ -228,7 +228,8 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode, TypeExceptio
          * Checks number of arguments.
          */
         if (!(n.arglist.size() == at.parlist.size())) {
-            throw new TypeException("Wrong number of parameters in the invocation of " + n.id, n.getLine());
+            throw new TypeException(
+                    "Wrong number of parameters in the invocation of " + n.id, n.getLine());
         }
         /*
          * Type checks arguments.
@@ -366,20 +367,21 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode, TypeExceptio
          * Checks number of arguments.
          */
         if (!(n.arglist.size() == at.parlist.size())) {
-            throw new TypeException("Wrong number of parameters in the invocation of " + n.id2, n.getLine());
+            throw new TypeException(
+                    "Wrong number of parameters in the invocation of " + n.id2, n.getLine());
         }
         /*
          * Type checks arguments.
          */
         for (int i = 0; i < n.arglist.size(); i++) {
             if (!(isSubtype(visit(n.arglist.get(i)), at.parlist.get(i)))) {
-                throw new TypeException("Wrong type for " + (i + 1) + "-th parameter in the invocation of " + n.id2,
+                throw new TypeException(
+                        "Wrong type for " + (i + 1) + "-th parameter in the invocation of " + n.id2,
                         n.getLine());
             }
         }
         return at.ret;
     }
-
 
     @Override
     public TypeNode visitNode(NewNode n) throws TypeException {

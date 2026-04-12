@@ -5,9 +5,7 @@ import static compiler.lib.FOOLlib.*;
 import compiler.AST.*;
 import compiler.FOOLParser.*;
 import compiler.lib.*;
-
 import java.util.*;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -17,8 +15,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
     String indent;
     public boolean print;
 
-    ASTGenerationSTVisitor() {
-    }
+    ASTGenerationSTVisitor() {}
 
     ASTGenerationSTVisitor(boolean debug) {
         print = debug;
@@ -30,7 +27,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
         if (!parentClass.equals(
                 ParserRuleContext
                         .class)) // parentClass is the var context (and not ctxClass itself)
-            prefix = lowerizeFirstChar(extractCtxName(parentClass.getName())) + ": production #";
+        prefix = lowerizeFirstChar(extractCtxName(parentClass.getName())) + ": production #";
         System.out.println(indent + prefix + lowerizeFirstChar(extractCtxName(ctxClass.getName())));
     }
 

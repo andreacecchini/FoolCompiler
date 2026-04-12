@@ -3,7 +3,6 @@ package compiler;
 import compiler.AST.*;
 import compiler.exc.*;
 import compiler.lib.*;
-
 import java.util.*;
 
 public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
@@ -29,8 +28,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
     /* Symbol table errors. */
     int stErrors = 0;
 
-    SymbolTableASTVisitor() {
-    }
+    SymbolTableASTVisitor() {}
 
     SymbolTableASTVisitor(boolean debug) {
         super(debug);
@@ -118,7 +116,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         for (final ParNode par : n.parlist) {
             final var parEntry = new STentry(nestingLevel, par.getType(), parOffset++);
             if (functionScope.put(par.id, parEntry) != null) {
-                System.out.println("Par id " + par.id + " at line " + n.getLine() + " already declared");
+                System.out.println(
+                        "Par id " + par.id + " at line " + n.getLine() + " already declared");
                 stErrors++;
             }
         }
@@ -256,7 +255,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
          */
         final STentry entry = stLookup(n.id);
         if (entry == null) {
-            System.out.println("Var or Par id " + n.id + " at line " + n.getLine() + " not declared");
+            System.out.println(
+                    "Var or Par id " + n.id + " at line " + n.getLine() + " not declared");
             stErrors++;
         } else {
             /*
@@ -317,7 +317,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         final ClassTypeNode classType = new ClassTypeNode(new ArrayList<>(), new ArrayList<>());
         final var classEntry = new STentry(GLOBAL_LEVEL, classType, decOffset--);
         if (globalScope.put(n.id, classEntry) != null) {
-            System.out.println("Class id " + n.id + " at line " + n.getLine() + " already declared");
+            System.out.println(
+                    "Class id " + n.id + " at line " + n.getLine() + " already declared");
             stErrors++;
         }
         /*
@@ -339,7 +340,12 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
             final var pos = -fieldOffset - 1;
             final var fieldEntry = new STentry(CLASS_LEVEL, field.getType(), fieldOffset--);
             if (virtualTable.put(field.id, fieldEntry) != null) {
-                System.out.println("Field id " + field.id + " at line " + field.getLine() + " already declared");
+                System.out.println(
+                        "Field id "
+                                + field.id
+                                + " at line "
+                                + field.getLine()
+                                + " already declared");
                 stErrors++;
             }
             /* Updates class type with new field. */
@@ -378,12 +384,10 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         }
         final var methodType = new ArrowTypeNode(parTypes, n.retType);
         n.offset = methodOffset;
-        final STentry methodEntry = new STentry(
-                CLASS_LEVEL,
-                methodType,
-                methodOffset++);
+        final STentry methodEntry = new STentry(CLASS_LEVEL, methodType, methodOffset++);
         if (virtualTable.put(n.id, methodEntry) != null) {
-            System.out.println("Method id " + n.id + " at line " + n.getLine() + " already declared");
+            System.out.println(
+                    "Method id " + n.id + " at line " + n.getLine() + " already declared");
             stErrors++;
         }
         n.setType(methodType);
@@ -400,7 +404,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         for (final ParNode par : n.parlist) {
             final STentry parEntry = new STentry(nestingLevel, par.getType(), parOffset++);
             if (methodScope.put(par.id, parEntry) != null) {
-                System.out.println("Par id " + par.id + " at line " + n.getLine() + " already declared");
+                System.out.println(
+                        "Par id " + par.id + " at line " + n.getLine() + " already declared");
                 stErrors++;
             }
         }
@@ -435,7 +440,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
             stErrors++;
         } else {
             if (!(entry.type instanceof RefTypeNode)) {
-                System.out.println("Object id " + n.id1 + " at line " + n.getLine() + " not a ref type");
+                System.out.println(
+                        "Object id " + n.id1 + " at line " + n.getLine() + " not a ref type");
                 stErrors++;
             } else {
                 /*
@@ -444,7 +450,12 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
                 final String className = ((RefTypeNode) entry.type).id;
                 final var virtualTable = classTable.get(className);
                 if (virtualTable == null) {
-                    System.out.println("Class id " + n.id1 + " at line " + n.getLine() + " not declared in class table");
+                    System.out.println(
+                            "Class id "
+                                    + n.id1
+                                    + " at line "
+                                    + n.getLine()
+                                    + " not declared in class table");
                     stErrors++;
                 } else {
                     /*
@@ -452,7 +463,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
                      */
                     final STentry methodEntry = virtualTable.get(n.id2);
                     if (methodEntry == null) {
-                        System.out.println("Method id " + n.id2 + " at line " + n.getLine() + " not declared");
+                        System.out.println(
+                                "Method id " + n.id2 + " at line " + n.getLine() + " not declared");
                         stErrors++;
                     } else {
                         /*
@@ -485,7 +497,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
              */
             final var virtualTable = classTable.get(n.id);
             if (virtualTable == null) {
-                System.out.println("Class id " + n.id + " at line " + n.getLine() + " not in class table");
+                System.out.println(
+                        "Class id " + n.id + " at line " + n.getLine() + " not in class table");
                 stErrors++;
             } else {
                 /*
