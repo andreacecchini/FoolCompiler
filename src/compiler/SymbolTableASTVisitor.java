@@ -315,6 +315,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
          */
         final var globalScope = symTable.get(GLOBAL_LEVEL);
         final ClassTypeNode classType = new ClassTypeNode(new ArrayList<>(), new ArrayList<>());
+        n.type = classType;
         final var classEntry = new STentry(GLOBAL_LEVEL, classType, decOffset--);
         if (n.superId != null) {
             // inheritance
@@ -387,10 +388,13 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
          */
         methodOffset = classType.allMethods.isEmpty() ? METHOD_OFFSET_START : classType.allMethods.size();
         for (final var method : n.methods) {
-            final var pos = methodOffset;
             visit(method);
             /* Updates class type with new method. */
-            classType.allMethods.add(pos, method.getType());
+            if (classType.allMethods.size() > method.offset) {
+                classType.allMethods.set(method.offset, method.getType());
+            } else {
+                classType.allMethods.add(method.offset, method.getType());
+            }
         }
         /*
          * Closing class scope.
@@ -415,6 +419,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
             parTypes.add(par.getType());
         }
         final var methodType = new ArrowTypeNode(parTypes, n.retType);
+        methodType.setLine(n.getLine());
         final var oldEntry = virtualTable.get(n.id);
         if (oldEntry != null) {
             // overriding

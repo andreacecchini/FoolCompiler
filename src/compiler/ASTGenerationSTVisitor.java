@@ -255,11 +255,13 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
         for (int i = 0; i < c.methdec().size(); i++) {
             methodsNode.add((MethodNode) visit(c.methdec(i)));
         }
-        return new ClassNode(
+        final var n = new ClassNode(
                 c.ID(0).getText(),
                 c.EXTENDS() == null ? null : c.ID(1).getText(),
                 fieldsNode,
                 methodsNode);
+        n.setLine(c.CLASS().getSymbol().getLine());
+        return n;
     }
 
     @Override
@@ -275,8 +277,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
         for (DecContext dec : c.dec()) decList.add((DecNode) visit(dec));
         Node n = null;
         if (c.ID().size() > 0) { // non-incomplete ST
-            n =
-                    new MethodNode(
+            n = new MethodNode(
                             c.ID(0).getText(),
                             (TypeNode) visit(c.type(0)),
                             parList,

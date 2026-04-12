@@ -344,8 +344,10 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode, TypeExceptio
                     }
                 }
                 for (int i = 0; i < baseType.allMethods.size(); i++) {
-                    if (!isSubtype(currentType.allFields.get(i), baseType.allFields.get(i))) {
-                        throw new TypeException("Wrong type for method overriding", n.getLine());
+                    final TypeNode currentMethod = currentType.allMethods.get(i);
+                    final var baseMethod = baseType.allMethods.get(i);
+                    if (!isSubtype(currentMethod, baseMethod)) {
+                        throw new TypeException("Wrong type for method overriding", currentMethod.getLine());
                     }
                 }
             }

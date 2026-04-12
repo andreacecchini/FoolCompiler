@@ -13,11 +13,15 @@ public class TypeRels {
     // valuta se il tipo "a" e' <= al tipo "b", dove "a" e "b" sono tipi di base: IntTypeNode o
     // BoolTypeNode
     public static boolean isSubtype(TypeNode a, TypeNode b) {
-        return a.getClass().equals(b.getClass())
+        // Checking method.
+        if  (a instanceof ArrowTypeNode aFun && b instanceof ArrowTypeNode bFun) {
+            return isSubTypeFun(aFun, bFun);
+        }
+        return  (a.getClass().equals(b.getClass()))
                 || ((a instanceof BoolTypeNode) && (b instanceof IntTypeNode))
-                || (a instanceof EmptyTypeNode) && (b instanceof RefTypeNode)
-                || (a instanceof RefTypeNode aRef) && (b instanceof RefTypeNode bRef) && isSubTypeRel(aRef, bRef)
-                || (a instanceof ArrowTypeNode aFun) && (b instanceof ArrowTypeNode bFun) && isSubTypeFun(aFun, bFun);
+                || ((a instanceof EmptyTypeNode) && (b instanceof RefTypeNode))
+                || (a instanceof RefTypeNode aRef) && (b instanceof RefTypeNode bRef) && (isSubTypeRel(aRef, bRef));
+
     }
 
     private static boolean isSubTypeRel(RefTypeNode a, RefTypeNode b) {

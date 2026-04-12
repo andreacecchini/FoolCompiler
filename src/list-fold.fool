@@ -17,7 +17,7 @@ let
 
     /* (x, y) => x * y. */
     class Product extends BiIntFunction () {
-        fun apply: int (x: int, y: int) x * y;
+        fun apply: bool (x: bool, y: int) true;
     }
 
     /* folding a list using f function starting from acc. */
