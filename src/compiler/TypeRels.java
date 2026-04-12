@@ -5,7 +5,6 @@ import compiler.lib.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class TypeRels {
     public static final Map<String, String> SUPER_TYPE = new HashMap<>();
@@ -17,16 +16,17 @@ public class TypeRels {
         if  (a instanceof ArrowTypeNode aFun && b instanceof ArrowTypeNode bFun) {
             return isSubTypeFun(aFun, bFun);
         }
+        if (a instanceof RefTypeNode aRef && b instanceof RefTypeNode bRef) {
+            return isSubTypeRel(aRef, bRef);
+        }
         return  (a.getClass().equals(b.getClass()))
                 || ((a instanceof BoolTypeNode) && (b instanceof IntTypeNode))
-                || ((a instanceof EmptyTypeNode) && (b instanceof RefTypeNode))
-                || (a instanceof RefTypeNode aRef) && (b instanceof RefTypeNode bRef) && (isSubTypeRel(aRef, bRef));
-
+                || ((a instanceof EmptyTypeNode) && (b instanceof RefTypeNode));
     }
 
     private static boolean isSubTypeRel(RefTypeNode a, RefTypeNode b) {
-        // TODO: a -> b , b -> c => a -> c
-        return SUPER_TYPE.get(a.id).equals(b.id);
+        // TODO: a -> b , b -> c then a -> c, where "->" means "inherits from"
+        return a.id.equals(b.id) || SUPER_TYPE.get(a.id).equals(b.id);
     }
 
     private static boolean isSubTypeFun(ArrowTypeNode a, ArrowTypeNode b) {
