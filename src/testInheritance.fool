@@ -1,0 +1,19 @@
+let
+    class A (f1: int) {
+        fun m1: int (a: bool) if a then { f1 } else { 0 };
+    }
+
+    class B extends A (f2: int) {
+        fun m1: bool (a: bool) a;
+        fun m2: int () f2;
+    }
+
+    class C extends A (f2: A) {
+        fun m2: int () f2.m1(true);
+    }
+
+    var a: A = new A(10);
+    var b: A = new B(10, 20);
+    var c: C = new C(10, b);
+in
+    print(c.m2());
