@@ -255,7 +255,11 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
         for (int i = 0; i < c.methdec().size(); i++) {
             methodsNode.add((MethodNode) visit(c.methdec(i)));
         }
-        return new ClassNode(c.ID(0).getText(), fieldsNode, methodsNode);
+        return new ClassNode(
+                c.ID(0).getText(),
+                c.EXTENDS() == null ? null : c.EXTENDS().getText(),
+                fieldsNode,
+                methodsNode);
     }
 
     @Override

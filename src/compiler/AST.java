@@ -326,12 +326,14 @@ public class AST {
 
     public static class ClassNode extends DecNode {
         final String id;
+        final String superId;
         TypeNode type = null;
         final List<FieldNode> fields;
         final List<MethodNode> methods;
 
-        public ClassNode(String i, List<FieldNode> fs, List<MethodNode> ms) {
+        public ClassNode(String i, String si, List<FieldNode> fs, List<MethodNode> ms) {
             id = i;
+            superId = si;
             fields = Collections.unmodifiableList(fs);
             methods = Collections.unmodifiableList(ms);
         }
