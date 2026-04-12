@@ -325,7 +325,9 @@ public class AST {
     }
 
     public static class ClassNode extends DecNode {
+        // Class Id
         final String id;
+        // Superclass Id
         final String superId;
         TypeNode type = null;
         final List<FieldNode> fields;
