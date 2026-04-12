@@ -1,22 +1,22 @@
 let
     /* List h :: t. */
-    class List(h: int, t: List) {
+    class List (h: int, t: List) {
         fun head: int () h;
         fun tail: List () t;
     }
 
     /* Abstracts an (int, int) => int function. */
-    class BiIntFunction() {
+    class BiIntFunction () {
         fun apply: int (x:int, y: int) null;
     }
 
     /* (x, y) => x + y. */
-    class Sum() extends BiIntFunction() {
+    class Sum extends BiIntFunction () {
         fun apply: int (x: int, y: int) x + y;
     }
 
     /* (x, y) => x * y. */
-    class Product() extends BiIntFunction() {
+    class Product extends BiIntFunction () {
         fun apply: int (x: int, y: int) x * y;
     }
 
