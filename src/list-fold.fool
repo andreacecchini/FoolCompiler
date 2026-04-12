@@ -36,6 +36,7 @@ let
                 then { acc }
                 else { fold(l.tail(), f.apply(acc, l.head()), f) };
 
+    /* retrieve the last element of the list. */
     fun lastElement: int (l: List) fold(l, l.head(), new Second());
 
     /* Empty node list. */
