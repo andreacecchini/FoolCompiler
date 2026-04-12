@@ -525,6 +525,9 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
                 }
             }
         }
+        for (final Node arg : n.arglist) {
+            visit(arg);
+        }
         return null;
     }
 

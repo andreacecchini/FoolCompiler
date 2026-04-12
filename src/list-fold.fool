@@ -17,7 +17,17 @@ let
 
     /* (x, y) => x * y. */
     class Product extends BiIntFunction () {
-        fun apply: bool (x: bool, y: int) true;
+        fun apply: int (x: int, y: int) x * y;
+    }
+
+    /* (x, y) => x */
+    class First extends BiIntFunction () {
+        fun apply: int (x: int, y: int) x;
+    }
+
+    /* (x, y) => y */
+    class Second extends BiIntFunction() {
+        fun apply: int (x: int, y: int) y;
     }
 
     /* folding a list using f function starting from acc. */
@@ -25,6 +35,8 @@ let
             if (l == null)
                 then { acc }
                 else { fold(l.tail(), f.apply(acc, l.head()), f) };
+
+    fun lastElement: int (l: List) fold(l, l.head(), new Second());
 
     /* Empty node list. */
     fun nil: List () null;
@@ -34,4 +46,4 @@ let
 
     var l: List = cons(1, cons(2, cons(3, cons(4, nil()))));
 in
-    print(fold(l, 0, new Sum()));
+    print(lastElement(l));

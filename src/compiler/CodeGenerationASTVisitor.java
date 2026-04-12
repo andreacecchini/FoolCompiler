@@ -11,6 +11,8 @@ import svm.ExecuteVM;
 
 public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidException> {
 
+    final private List<List<String>> dispatchTables = new ArrayList<>();
+
     CodeGenerationASTVisitor() {}
 
     CodeGenerationASTVisitor(boolean debug) {
@@ -268,14 +270,27 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
     @Override
     public String visitNode(ClassNode n) throws VoidException {
         final List<String> dispatchTable = new ArrayList<>();
-        String dispatchTableGeneration = "";
+        if (n.superEntry != null) {
+            // inheritance
+            dispatchTable.addAll(dispatchTables.get(-n.superEntry.offset-2));
+        }
+        dispatchTables.add(dispatchTable);
+        String dtCode = "";
         for (final MethodNode method : n.methods) {
             visit(method);
-            dispatchTable.add(method.offset, method.label);
-            dispatchTableGeneration =
+            final var offset = method.offset;
+            final var label = method.label;
+            if (offset < dispatchTable.size()) {
+                dispatchTable.set(offset, label);
+            } else {
+                dispatchTable.add(label);
+            }
+        }
+        for (String label : dispatchTable) {
+            dtCode =
                     nlJoin(
-                            dispatchTableGeneration,
-                            "push " + method.label, // Push label in heap
+                            dtCode,
+                            "push " + label, // Push label in heap
                             "lhp",
                             "sw",
                             "lhp", // Increment heap pointer
@@ -285,7 +300,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
         }
         return nlJoin(
                 "lhp", // push $hp into stack (dispatch pointer to return at the end).
-                dispatchTableGeneration);
+                dtCode);
     }
 
     @Override
