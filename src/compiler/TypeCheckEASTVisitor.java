@@ -6,7 +6,6 @@ import compiler.AST.*;
 import compiler.exc.*;
 import compiler.lib.*;
 
-import java.util.zip.ZipOutputStream;
 
 // visitNode(n) fa il type checking di un Node n e ritorna:
 // - per una espressione, il suo tipo (oggetto BoolTypeNode o IntTypeNode)
