@@ -4,7 +4,7 @@ let
     }
 
     class B extends A (f2: int) {
-        fun m1: bool (a: bool) a;
+        fun m1: bool (a: int) a>=1;
         fun m2: int () f2;
     }
 

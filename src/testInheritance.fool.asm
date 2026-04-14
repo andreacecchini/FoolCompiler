@@ -163,10 +163,17 @@ js
 function1:
 cfp
 lra
+push 1
 lfp
 push 1
 add
 lw
+bleq label2
+push 0
+b label3
+label2:
+push 1
+label3:
 stm
 sra
 pop
