@@ -1,0 +1,13 @@
+let 
+    class C () {
+
+    }
+    class B extends C () {
+
+    }
+    class A extends B () {
+
+    }
+    fun identity: C (c: C) c;
+in
+    identity(new A()); 

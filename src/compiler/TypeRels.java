@@ -4,29 +4,42 @@ import compiler.AST.*;
 import compiler.lib.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class TypeRels {
     public static final Map<String, String> SUPER_TYPE = new HashMap<>();
 
-    // valuta se il tipo "a" e' <= al tipo "b", dove "a" e "b" sono tipi di base: IntTypeNode o
+    // valuta se il tipo "a" e' <= al tipo "b", dove "a" e "b" sono tipi di base:
+    // IntTypeNode o
     // BoolTypeNode
     public static boolean isSubtype(TypeNode a, TypeNode b) {
         // Checking method.
-        if  (a instanceof ArrowTypeNode aFun && b instanceof ArrowTypeNode bFun) {
-            return isSubTypeFun(aFun, bFun);
+        if (a instanceof ArrowTypeNode aFun) {
+            return b instanceof ArrowTypeNode bFun && isSubTypeFun(aFun, bFun);
         }
-        if (a instanceof RefTypeNode aRef && b instanceof RefTypeNode bRef) {
-            return isSubTypeRel(aRef, bRef);
+        if (a instanceof RefTypeNode aRef) {
+            return b instanceof RefTypeNode bRef && isSubTypeRel(aRef, bRef);
         }
-        return  (a.getClass().equals(b.getClass()))
+        return (a.getClass().equals(b.getClass()))
                 || ((a instanceof BoolTypeNode) && (b instanceof IntTypeNode))
                 || ((a instanceof EmptyTypeNode) && (b instanceof RefTypeNode));
     }
 
     private static boolean isSubTypeRel(RefTypeNode a, RefTypeNode b) {
-        // TODO: a -> b , b -> c then a -> c, where "->" means "inherits from"
-        return a.id.equals(b.id) || SUPER_TYPE.get(a.id).equals(b.id);
+        if (a.id.equals(b.id)) {
+            return true;
+        }
+        String current = SUPER_TYPE.get(a.id);
+        final Set<String> visited = new HashSet<>();
+        while (current != null && visited.add(current)) {
+            if (current.equals(b.id)) {
+                return true;
+            }
+            current = SUPER_TYPE.get(current);
+        }
+        return false;
     }
 
     private static boolean isSubTypeFun(ArrowTypeNode a, ArrowTypeNode b) {
