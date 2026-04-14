@@ -33,7 +33,7 @@ lhp
 push 1
 add
 shp
-push function3
+push function4
 lhp
 sw
 lhp
@@ -117,20 +117,20 @@ lhp
 push 1
 add
 shp
-lfp
+push 1
+push 1
+beq label4
 lfp
 push -7
 add
 lw
-stm
-ltm
-ltm
-lw
-push 1
+b label5
+label4:
+lfp
+push -5
 add
 lw
-js
-print
+label5:
 halt
 
 function0:
@@ -200,6 +200,32 @@ lra
 js
 
 function3:
+cfp
+lra
+lfp
+push 0
+lfp
+lw
+push -2
+add
+lw
+stm
+ltm
+ltm
+lw
+push 0
+add
+lw
+js
+stm
+sra
+pop
+sfp
+ltm
+lra
+js
+
+function4:
 cfp
 lra
 lfp

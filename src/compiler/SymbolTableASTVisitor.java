@@ -367,7 +367,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
                 final var overriddenOffset = oldEntry.offset;
                 final var overriddenEntry = new STentry(CLASS_LEVEL, field.getType(), overriddenOffset);
                 final var overriddenPos = -overriddenOffset - 1;
-                if (overriddenEntry.type instanceof ArrowTypeNode) {
+                if (oldEntry.type instanceof ArrowTypeNode) {
                     System.out.println("Overriding method " + field.id + " with a field");
                     stErrors++;
                 } else {

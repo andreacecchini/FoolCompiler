@@ -10,7 +10,7 @@ lfp
 
 
 push 10000
-push -4
+push -3
 add
 lw
 lhp
