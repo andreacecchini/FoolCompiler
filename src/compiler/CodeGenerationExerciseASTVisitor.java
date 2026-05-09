@@ -242,11 +242,11 @@ public class CodeGenerationExerciseASTVisitor extends BaseASTVisitor<String, Voi
     }
 
     private String followStaticChain(int nestingDifference) {
-        return IntStream.range(0, nestingDifference).mapToObj(_ -> LW).reduce("", FOOLlib::nlJoin);
+        return IntStream.range(0, nestingDifference).mapToObj(i -> LW).reduce("", FOOLlib::nlJoin);
     }
 
     private String popN(List<? extends Node> nodes) {
-        return nodes.stream().map(_ -> POP).reduce("", FOOLlib::nlJoin);
+        return nodes.stream().map(i -> POP).reduce("", FOOLlib::nlJoin);
     }
 
     private String loads(List<? extends Node> declarations) {

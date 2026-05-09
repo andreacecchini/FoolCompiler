@@ -363,7 +363,7 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode, TypeExceptio
         for (final Node dec : n.declist)
             try {
                 visit(dec);
-            } catch (IncomplException _) {
+            } catch (IncomplException e) {
             } catch (TypeException e) {
                 System.out.println("Type checking error in a declaration: " + e.text);
             }
