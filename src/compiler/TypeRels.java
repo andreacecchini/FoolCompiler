@@ -11,9 +11,6 @@ import java.util.Set;
 public class TypeRels {
     public static final Map<String, String> SUPER_TYPE = new HashMap<>();
 
-    // valuta se il tipo "a" e' <= al tipo "b", dove "a" e "b" sono tipi di base:
-    // IntTypeNode o
-    // BoolTypeNode
     public static boolean isSubtype(TypeNode a, TypeNode b) {
         // Checking method.
         if (a instanceof ArrowTypeNode aFun) {
