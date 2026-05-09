@@ -49,14 +49,14 @@ public class TypeRels {
     }
 
     private static boolean isFunSubType(ArrowTypeNode a, ArrowTypeNode b) {
+        // Return type is covariant; parameters are contravariant.
         if (a.parlist.size() != b.parlist.size()) {
             return false;
         }
-        // co-variance on return type
-        boolean retType = isSubtype(a.ret, b.ret);
-        // contro-variance on parameters.
-        boolean parameters = IntStream.range(0, a.parlist.size())
+
+        boolean parametersContravariant = IntStream.range(0, a.parlist.size())
                 .allMatch(i -> isSubtype(b.parlist.get(i), a.parlist.get(i)));
-        return retType && parameters;
+        boolean retTypeCovariance = isSubtype(a.ret, b.ret);
+        return parametersContravariant && retTypeCovariance;
     }
 }
