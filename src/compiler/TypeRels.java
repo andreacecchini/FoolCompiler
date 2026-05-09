@@ -56,7 +56,7 @@ public class TypeRels {
 
         boolean parametersContravariant = IntStream.range(0, a.parlist.size())
                 .allMatch(i -> isSubtype(b.parlist.get(i), a.parlist.get(i)));
-        boolean retTypeCovariance = isSubtype(a.ret, b.ret);
-        return parametersContravariant && retTypeCovariance;
+        boolean retTypeCovariant = isSubtype(a.ret, b.ret);
+        return parametersContravariant && retTypeCovariant;
     }
 }
