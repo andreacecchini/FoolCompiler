@@ -302,7 +302,9 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
     public Node visitNew(NewContext c) {
         List<Node> arglist = new ArrayList<>();
         for (ExpContext arg : c.exp()) arglist.add(visit(arg));
-        return new NewNode(c.ID().getText(), arglist);
+        Node n = new NewNode(c.ID().getText(), arglist);
+        n.setLine(c.ID().getSymbol().getLine());
+        return n;
     }
 
     @Override

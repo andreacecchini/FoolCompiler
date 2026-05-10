@@ -226,14 +226,14 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode, TypeExceptio
         }
         final ArrowTypeNode at = (ArrowTypeNode) t;
         /*
-         * Checks number of arguments.
+         * Checks number of parameters.
          */
         if (!(n.arglist.size() == at.parlist.size())) {
             throw new TypeException(
                     "Wrong number of parameters in the invocation of " + n.id, n.getLine());
         }
         /*
-         * Type checks arguments.
+         * Type checks parameters.
          */
         for (int i = 0; i < n.arglist.size(); i++)
             if (!(isSubtype(visit(n.arglist.get(i)), at.parlist.get(i))))
@@ -278,7 +278,7 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode, TypeExceptio
          * Type checks not content.
          */
         if (!(isSubtype(visit(n.bool), new BoolTypeNode()))) {
-            throw new TypeException("Non boolean argument in not", n.getLine());
+            throw new TypeException("Non boolean in not", n.getLine());
         }
         return new BoolTypeNode();
     }
@@ -388,14 +388,14 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode, TypeExceptio
         }
         ArrowTypeNode at = (ArrowTypeNode) t;
         /*
-         * Checks number of arguments.
+         * Checks number of parameters.
          */
         if (!(n.arglist.size() == at.parlist.size())) {
             throw new TypeException(
                     "Wrong number of parameters in the invocation of " + n.id2, n.getLine());
         }
         /*
-         * Type checks arguments.
+         * Type checks parameters.
          */
         for (int i = 0; i < n.arglist.size(); i++) {
             if (!(isSubtype(visit(n.arglist.get(i)), at.parlist.get(i)))) {
@@ -412,13 +412,13 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode, TypeExceptio
         if (print) printNode(n, n.id);
         ClassTypeNode ct = (ClassTypeNode) visit(n.entry);
         /*
-         * Checks number of arguments.
+         * Checks number of parameters.
          */
         if (n.arglist.size() != ct.allFields.size()) {
-            throw new TypeException("Wrong number of arguments in class", n.getLine());
+            throw new TypeException("Wrong number of parameters for "+ n.id +" class constructor", n.getLine());
         }
         /*
-         * Type checks constructor arguments.
+         * Type checks constructor parameters.
          */
         for (int i = 0; i < n.arglist.size(); i++) {
             if (!(isSubtype(visit(n.arglist.get(i)), ct.allFields.get(i)))) {

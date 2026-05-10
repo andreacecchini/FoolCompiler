@@ -347,7 +347,9 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
         if (n.superId != null) {
             // inheritance
             final var superVirtualTable = classTable.get(n.superId);
-            virtualTable.putAll(superVirtualTable);
+            if (superVirtualTable != null) {
+                virtualTable.putAll(superVirtualTable);
+            }
         }
         symTable.add(virtualTable);
         nestingLevel++;
