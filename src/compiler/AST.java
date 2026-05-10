@@ -411,7 +411,7 @@ public class AST {
     }
 
     public static class NewNode extends Node {
-        String id;
+        final String id;
         final List<Node> arglist;
         STentry entry;
 
@@ -466,7 +466,7 @@ public class AST {
     }
 
     public static class RefTypeNode extends TypeNode {
-        String id;
+        final String id;
 
         RefTypeNode(String i) {
             id = i;
