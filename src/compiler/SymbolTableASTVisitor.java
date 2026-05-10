@@ -551,7 +551,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void, VoidException> {
             final var virtualTable = classTable.get(n.id);
             if (virtualTable == null) {
                 System.out.println(
-                        "Class id " + n.id + " at line " + n.getLine() + " not in class table");
+                        "Id " + n.id + " at line " + n.getLine() + " not a class");
                 stErrors++;
             } else {
                 /*
