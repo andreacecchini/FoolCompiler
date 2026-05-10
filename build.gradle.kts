@@ -19,7 +19,7 @@ plugins {
     java
     application
     antlr
-    alias(libs.plugins.spotless)
+    // alias(libs.plugins.spotless)
 }
 
 repositories {
@@ -36,15 +36,15 @@ application {
     mainClass.set("compiler.Test")
 }
 
-spotless {
-    java {
-        target("src/**/*.java")
-        googleJavaFormat(libs.versions.googleJavaFormat.get()).aosp()
-        removeUnusedImports()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-}
+// spotless {
+//     java {
+//         target("src/**/*.java")
+//         googleJavaFormat(libs.versions.googleJavaFormat.get()).aosp()
+//         removeUnusedImports()
+//         trimTrailingWhitespace()
+//         endWithNewline()
+//     }
+// }
 
 dependencies {
     antlr(libs.antlr.tool)
@@ -109,5 +109,5 @@ tasks.register<JavaExec>("debug") {
 }
 
 tasks.build {
-    dependsOn("spotlessApply")
+    // dependsOn("spotlessApply")
 }
