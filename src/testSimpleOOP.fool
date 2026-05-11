@@ -4,7 +4,7 @@ let
         fun compose: Sum (other: Sum) new Sum(getSum(), other.getSum());
     }
     var s1: Sum = new Sum(1, 1);
-    var s2: Sum = new Sum(1, 2);
+    var s2: Sum = new Sam(1, 2);
     var s3: Sum = s1.compose(s2);
 in
     print(s3.getSum());

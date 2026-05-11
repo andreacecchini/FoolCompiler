@@ -410,22 +410,25 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode, TypeExceptio
     @Override
     public TypeNode visitNode(NewNode n) throws TypeException {
         if (print) printNode(n, n.id);
-        ClassTypeNode ct = (ClassTypeNode) visit(n.entry);
-        /*
-         * Checks number of parameters.
-         */
-        if (n.arglist.size() != ct.allFields.size()) {
-            throw new TypeException("Wrong number of parameters for "+ n.id +" class constructor", n.getLine());
-        }
-        /*
-         * Type checks constructor parameters.
-         */
-        for (int i = 0; i < n.arglist.size(); i++) {
-            if (!(isSubtype(visit(n.arglist.get(i)), ct.allFields.get(i)))) {
-                throw new TypeException(
-                        "Wrong type for " + (i + 1) + "-th parameter in the invocation of " + n.id,
-                        n.getLine());
+        if (visit(n.entry) instanceof ClassTypeNode ct) {
+            /*
+             * Checks number of parameters.
+             */
+            if (n.arglist.size() != ct.allFields.size()) {
+                throw new TypeException("Wrong number of parameters for " + n.id + " class constructor", n.getLine());
             }
+            /*
+             * Type checks constructor parameters.
+             */
+            for (int i = 0; i < n.arglist.size(); i++) {
+                if (!(isSubtype(visit(n.arglist.get(i)), ct.allFields.get(i)))) {
+                    throw new TypeException(
+                            "Wrong type for " + (i + 1) + "-th parameter in the invocation of " + n.id,
+                            n.getLine());
+                }
+            }
+        } else {
+            throw new TypeException("Id " + n.id + " not a class.", n.getLine());
         }
         return new RefTypeNode(n.id);
     }

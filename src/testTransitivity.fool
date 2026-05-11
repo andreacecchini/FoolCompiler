@@ -1,6 +1,6 @@
 let 
-    class C () {
-
+    class C (f: int) {
+        fun getF: int () f;
     }
     class B extends C () {
 
@@ -10,4 +10,4 @@ let
     }
     fun identity: C (c: C) c;
 in
-    identity(new A()); 
+    identity(new A(10));
